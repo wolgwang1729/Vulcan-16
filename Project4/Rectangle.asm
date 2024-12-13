@@ -1,7 +1,7 @@
 //Draws a filled rectangle at top left screen
 //Rectangle width is 16px and height is stored in RAM[0]
 
-@16384
+@SCREEN
 D=A 
 
 @base
