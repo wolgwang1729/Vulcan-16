@@ -8,6 +8,7 @@ The goal is also to implement the things I learned in University's third semeste
 
 # Technical Specifications
 - The 16-bit computer, I built, is based on Harvard Architecture (which is a variant of Von Neumann Architecture). 
+![Hack Computer Architecture](https://i.sstatic.net/cwLb8LVg.png)
 - The computer consists of:
   - `32K x 16` ROM, in which any program can be loaded.
   - `24577 x 16` memory, composed of `16K x 16` RAM, `8K x 16` for the screen memory map, and `1 x 16` for keyboard input.
