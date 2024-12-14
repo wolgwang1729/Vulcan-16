@@ -41,8 +41,7 @@ CHIP CPU {
     Mux16(a=instruction, b=outALU, sel=instruction[15], out=inARegister);
 
     //Juding whether to load A register, D register, or to write in memory using d bits
-    Xor(a=instruction[5], b=instruction[15], out=NotloadARegister);
-    Not(in=NotloadARegister, out=loadARegisterCinstructions);
+    And(a=instruction[5], b=instruction[15], out=loadARegisterCinstructions);
     Mux(a=true, b=loadARegisterCinstructions, sel=instruction[15], out=loadARegister);
     And(a=instruction[4], b=instruction[15], out=loadDRegister);
     And(a=instruction[3], b=instruction[15], out=writeM);
