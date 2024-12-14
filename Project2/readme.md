@@ -31,7 +31,7 @@ $$
 \hline 0 & 0 & 0 & 0 & 1 & 0 & x+y \\
 \hline 0 & 1 & 0 & 0 & 1 & 1 & x-y\\
 \hline 0 & 0 & 0 & 1 & 1 & 1 & y-x \\
-\hline 0 & 0 & 0 & 0 & 0 & 0 & x\&y \\
+\hline 0 & 0 & 0 & 0 & 0 & 0 & x\wedge y \\
 \hline 0 & 1 & 0 & 1 & 0 & 1 & x \mid y \\
 \hline \end{array}
 $$
