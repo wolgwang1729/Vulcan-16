@@ -55,7 +55,7 @@ $$
 \hline 0 & 0 & 0 & 0 & 1 & 0 & D+A &D+M \\
 \hline 0 & 1 & 0 & 0 & 1 & 1 & D-A  &D-M\\
 \hline 0 & 0 & 0 & 1 & 1 & 1 & A-D & M-D \\
-\hline 0 & 0 & 0 & 0 & 0 & 0 & D\&  A& D \& M \\
+\hline 0 & 0 & 0 & 0 & 0 & 0 & D\wedge  A& D \wedge M \\
 \hline 0 & 1 & 0 & 1 & 0 & 1 & D \mid A & D \mid M\\
 \hline \end{array}
 $$
