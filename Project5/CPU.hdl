@@ -49,13 +49,13 @@ CHIP CPU {
     
 
     Register(in=inARegister, load=loadARegister, out=outARegister,out[0..14]=addressM);
-    Register(in=outALU, load=loadDRegister, out=outDRegister);
+    Register(in=outALU, load=loadDRegister, out=DRegister);
 
-    // //Whether to use load in ALU or not
-    // Mux16(a=false, b=outDRegister, sel=instruction[15], out=outDRegisterF);
+    // //Whether to use load in ALU or not Redacted I was confused because my load of PC was not working
+    // Mux16(a=false, b=DRegister, sel=instruction[15], out=outDRegisterF);
     // Mux16(a=false, b=outMux16ALU, sel=instruction[15], out=outMux16ALUF);
     
-    ALU(x=outDRegister, y=outMux16ALU, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outALU, zr=zr, ng=ng);
+    ALU(x=DRegister, y=outMux16ALU, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outALU, zr=zr, ng=ng);
 
     And16(a=outALU, b=true, out=outM);
 
