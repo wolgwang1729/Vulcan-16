@@ -17,7 +17,6 @@ class Parser:
     def convertToBinary(self, str):
         decNum = int(str)
         binaryNum = bin(decNum)[2:]
-        type(binaryNum)
         zeros = "0" * (16 - len(binaryNum))
         return zeros + binaryNum
 
