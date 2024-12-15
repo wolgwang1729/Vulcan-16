@@ -25,16 +25,16 @@
 ### A Instructions:
 
 - Symbolic Symbol: `@value`
-- Bindary Syntax:  `0 {15 bits binary equivalent of value}`    
+- Binary Syntax:  `0 {15 bits binary equivalent of value}`    
    - Example: Symbolic Symbol: `@21` 
 
-   - Bindary Syntax:  `0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1`
+   - Binary Syntax:  `0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1`
    
 
 ### C Instructions:
 
 - Symbolic Symbol: `dest=comp ; jump`
-- Bindary Syntax:  `1 1 1 a c1 c2 c3 c4 c5 c6 d1 d2 d3 j1 j2 j3`
+- Binary Syntax:  `1 1 1 a c1 c2 c3 c4 c5 c6 d1 d2 d3 j1 j2 j3`
 
 | c1 | c2 | c3 | c4 | c5 | c6 | comp (a=0) | comp (a=1) |
 |----|----|----|----|----|----|-------------|-------------|
@@ -83,4 +83,4 @@
 
    - Example: Symbolic Symbol: `MD=D+1` 
 
-   - Bindary Syntax:  `1 1 1 0 0 1 1 1 1 1 0 1 1 0 0 0`
+   - Binary Syntax:  `1 1 1 0 0 1 1 1 1 1 0 1 1 0 0 0`
