@@ -28,6 +28,7 @@ The goal is also to implement the things I learned in University's third semeste
 - [`Project3/`](Project3/): Contains sequential logic components.
 - [`Project4/`](Project4/): Contains the machine language programs.
 - [`Project5/`](Project5/): Contains the CPU and overall computer architecture.
+- [`Project6/`](Project6/): Contains the assembler which is implemented in Python.
 
 ## Explanation of Each Project's Purpose
 - **Project1**: Building basic gates like And, Or, Not, Xor, Mux, Dmux.
@@ -35,6 +36,7 @@ The goal is also to implement the things I learned in University's third semeste
 - **Project3**: Developing sequential logic elements like program counter and registers of various sizes.
 - **Project4**: Writing assembly programs for the Hack computer.
 - **Project5**: Integrating all components into a working computer.
+- **Project6**: Developing an assembler to translate assembly language programs into machine code.
 
 # Hardware Components
 ## List and Description of All Hardware Components
