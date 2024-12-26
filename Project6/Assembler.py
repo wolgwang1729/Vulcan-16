@@ -223,5 +223,5 @@ class ASMFile:
 
             print(f'{self.fileName.split(".")[0]}.hack file created successfully')
 
-asmFile = ASMFile("Project6\ASM Files\Pong.asm")
+asmFile = ASMFile("Project6\ASM Files\Max.asm")
 asmFile.writeHackFile()
