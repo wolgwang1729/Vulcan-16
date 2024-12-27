@@ -1,6 +1,14 @@
 class Parser:
-    def __init__(self, filename):
-        self.filename=filename
+    def __init__(self, directory):
+        self.directory=directory
+        self.filename=self.getFilename()
+        self.counter=1
+    
+    def getFilename(self):
+        if "\\" in self.directory:
+            return self.directory.split("\\")[-1].split('.')[0].strip()
+        else:
+            return self.directory.split('.')[0].strip()
 
     def __call__(self, str):
         self.VMInstruction = str
@@ -9,6 +17,7 @@ class Parser:
         self.arg2 = self.getArg2()
         self.memorySegment = self.getMemorySegment()
         self.assemblyInstruction = self.getAssemblyInstruction()
+        self.counter+=1
         return self.assemblyInstruction
 
     def getCommandType(self, str):
@@ -55,11 +64,11 @@ class Parser:
             elif self.arg1 == "neg":
                 assemblyInstruction = "@SP\nM=M-1\nA=M\nM=-M\n@SP\nM=M+1"
             elif self.arg1 == "eq":
-                assemblyInstruction = "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE\nD;JEQ\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE\n0;JMP\n(TRUE)\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE)"
+                assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JEQ\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
             elif self.arg1 == "gt":
-                assemblyInstruction = "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE\nD;JGT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE\n0;JMP\n(TRUE)\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE)"
+                assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JGT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
             elif self.arg1 == "lt":
-                assemblyInstruction = "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE\nD;JLT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE\n0;JMP\n(TRUE)\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE)"
+                assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JLT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
             elif self.arg1 == "and":
                 assemblyInstruction = "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1"
             elif self.arg1 == "or":
@@ -71,9 +80,9 @@ class Parser:
             if self.memorySegment == "constant":
                 assemblyInstruction = f"@{self.arg2}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1"
             elif self.memorySegment == "local" or self.memorySegment == "argument" or self.memorySegment == "this" or self.memorySegment == "that":
-                assemblyInstruction = f"@{self.arg2}\nD=A\n@{Abreviations[self.memorySegment]}\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1"
+                assemblyInstruction = f"@{self.arg2}\nD=A\n@{Abreviations[self.memorySegment]}\nA=D+M\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1"
             elif self.memorySegment == "temp":
-                assemblyInstruction = f"@{self.arg2}\nD=A\n@5\nA=A+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1"
+                assemblyInstruction = f"@{self.arg2}\nD=A\n@5\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1"
             elif self.memorySegment == "pointer":
                 assemblyInstruction = f"@{Abreviations[self.arg2]}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1"
             elif self.memorySegment == "static":
@@ -81,9 +90,9 @@ class Parser:
 
         elif self.commandType == "C_POP":
             if self.memorySegment == "local" or self.memorySegment == "argument" or self.memorySegment == "this" or self.memorySegment == "that":
-                assemblyInstruction = f"@{self.arg2}\nD=A\n@{Abreviations[self.memorySegment]}\nD=M+D\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nA=M\nM=D\n"
+                assemblyInstruction = f"@{self.arg2}\nD=A\n@{Abreviations[self.memorySegment]}\nD=D+M\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nA=M\nM=D"
             elif self.memorySegment == "temp":
-                assemblyInstruction = f"@{self.arg2}\nD=A\n@5\nD=A+D\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nA=M\nM=D\n"
+                assemblyInstruction = f"@{self.arg2}\nD=A\n@5\nD=D+A\n@R13\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@R13\nA=M\nM=D"
             elif self.memorySegment == "pointer":
                 assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@{Abreviations[self.arg2]}\nM=D"
             elif self.memorySegment == "static":
@@ -92,13 +101,20 @@ class Parser:
         return assemblyInstruction
     
 class CodeWriter:
-    def __init__(self,filename,relevantVMInstructions,assemblyInstructions):
-        self.filename=filename+".asm"
+    def __init__(self,directory,relevantVMInstructions,assemblyInstructions):
+        self.directory=directory+".asm"
+        self.filename=self.getFilename()
         self.relevantVMInstructions=relevantVMInstructions
         self.assemblyInstructions=assemblyInstructions
+    
+    def getFilename(self):
+        if "\\" in self.directory:
+            return self.directory.split("\\")[-1].split('.')[0].strip()
+        else:
+            return self.directory.split('.')[0].strip()
 
     def write(self):
-        with open(self.filename.split(".")[0]+".asm", "w") as file:
+        with open(self.directory.split(".")[0]+".asm", "w") as file:
             for i, instruction in enumerate(self.assemblyInstructions):
                 if i < len(self.assemblyInstructions) - 1:
                     file.write("//"+self.relevantVMInstructions[i] + "\n")
@@ -109,15 +125,22 @@ class CodeWriter:
         print(f"File {self.filename}.asm has been created successfully")
 
 class VMTranslator:
-    def __init__(self,filename):
-        self.filename=filename.strip()
+    def __init__(self,directory):
+        self.directory=directory.strip()
+        self.filename=self.getFilename()
         self.content = self.readFile()
         self.relevantVMInstructions = self.getVMInstructions()
         self.assemblyInstructions = self.getAssemblyInstructions()
         self.writeAssemblyFile()
 
+    def getFilename(self):
+        if "\\" in self.directory:
+            return self.directory.split("\\")[-1].split('.')[0].strip()
+        else:
+            return self.directory.split('.')[0].strip()
+
     def readFile(self):
-        with open(self.filename, "r") as file:
+        with open(self.directory, "r") as file:
             return file.read()
         
     def getVMInstructions(self):
@@ -134,13 +157,17 @@ class VMTranslator:
     
     def getAssemblyInstructions(self):
         assemblyInstructions = []
-        parser=Parser(self.filename.split(".")[0].strip())
+        parser=Parser(self.directory.split(".")[0].strip())
         for line in self.relevantVMInstructions:
             assemblyInstructions.append(parser(line))
         return assemblyInstructions
     
     def writeAssemblyFile(self):
-        writer = CodeWriter(self.filename.split(".")[0].strip(),self.relevantVMInstructions, self.assemblyInstructions)
+        writer = CodeWriter(self.directory.split('.')[0].strip(),self.relevantVMInstructions, self.assemblyInstructions)
         writer.write()
 
-translator=VMTranslator("Project7/test.vm")
+import os
+directory="Project7\VMFiles"
+for filename in os.listdir(directory):
+        if filename.endswith(".vm"):
+            VMTranslator(os.path.join(directory, filename))
