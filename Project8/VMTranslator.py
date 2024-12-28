@@ -133,7 +133,7 @@ class Parser:
             assemblyInstruction = f"@{self.arg1}\n0;JMP"
 
         elif self.commandType == "C_IF":
-            assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@{self.arg1}\nD;JGT"
+            assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@{self.arg1}\nD;JNE"
 
         elif self.commandType == "C_FUNCTION":
             assemblyInstruction = f"({self.arg1})\n@{self.arg2}\nD=A\n({self.arg1}.LOOP)\n@{self.arg1}.END\nD;JEQ\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@{self.arg1}.LOOP\n0;JMP\n({self.arg1}.END)"

@@ -68,7 +68,7 @@ M=M-1
 A=M
 D=M
 @N_LT_2
-D;JGT
+D;JNE
 
 //goto N_GE_2
 @N_GE_2
