@@ -29,6 +29,8 @@ The goal is also to implement the things I learned in University's third semeste
 - [`Project4/`](Project4/): Contains the machine language programs.
 - [`Project5/`](Project5/): Contains the CPU and overall computer architecture.
 - [`Project6/`](Project6/): Contains the assembler which is implemented in Python.
+- [`Project7/`](Project7/): Contains the virtual machine (VM) translator implemented in python which translates VM code to assembly language by handling Arithmetic/Logical commands and Memory Segment commands.
+- [`Project8/`](Project8/): Contains the virtual machine (VM) translator implemented in python which translates VM code to assembly language by handling Arithmetic/Logical commands, Memory Segment commands, Branching commands and Function commamds.
 
 ## Explanation of Each Project's Purpose
 - **Project1**: Building basic gates like And, Or, Not, Xor, Mux, Dmux.
@@ -37,6 +39,8 @@ The goal is also to implement the things I learned in University's third semeste
 - **Project4**: Writing assembly programs for the Hack computer.
 - **Project5**: Integrating all components into a working computer.
 - **Project6**: Developing an assembler to translate assembly language programs into machine code.
+- **Project7**: Implementing the first part of the virtual machine (VM) translator to handle stack arithmetic and memory access commands.
+- **Project8**: Extending the VM translator to handle program control and function commands, completing the implementation of the Hack virtual machine.
 
 # Hardware Components
 ## List and Description of All Hardware Components
