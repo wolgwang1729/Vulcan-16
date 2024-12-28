@@ -1,8 +1,10 @@
+import os
 class Parser:
-    def __init__(self, directory):
+    def __init__(self, directory,counter=1,returnCounter=1):
         self.directory=directory
         self.filename=self.getFilename()
-        self.counter=1
+        self.counter=counter
+        self.returnCounter=returnCounter
     
     def getFilename(self):
         if "\\" in self.directory:
@@ -19,6 +21,9 @@ class Parser:
         self.assemblyInstruction = self.getAssemblyInstruction()
         self.counter+=1
         return self.assemblyInstruction
+    
+    def getCounters(self):
+        return self.counter,self.returnCounter
 
     def getCommandType(self, str):
         if "push" in str:
@@ -31,6 +36,12 @@ class Parser:
             return "C_IF"
         elif "goto" in str:
             return "C_GOTO"
+        elif "call" in str:
+            return "C_CALL"
+        elif "function" in str:
+            return "C_FUNCTION"
+        elif "return" in str:
+            return "C_RETURN"
         else:
             return "C_ARITHMETIC"
         
@@ -39,11 +50,17 @@ class Parser:
             return self.VMInstruction.strip()
         elif self.commandType == "C_LABEL" or self.commandType == "C_GOTO" or self.commandType=="C_IF":
             return self.VMInstruction.split(" ")[1].strip()
+        elif self.commandType == "C_FUNCTION" or self.commandType == "C_CALL":
+            return self.VMInstruction.split(" ")[-2].strip()
+        elif self.commandType == "C_RETURN":
+            return None
         else:
             return self.VMInstruction.split(" ")[0].strip()
     
     def getArg2(self):
         if self.commandType=="C_PUSH" or self.commandType=="C_POP":
+            return int(self.VMInstruction.split(" ")[-1].strip())
+        elif self.commandType=="C_FUNCTION" or self.commandType=="C_CALL":
             return int(self.VMInstruction.split(" ")[-1].strip())
         else:
             return None
@@ -115,6 +132,16 @@ class Parser:
         elif self.commandType == "C_IF":
             assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@{self.arg1}\nD;JGT"
 
+        elif self.commandType == "C_FUNCTION":
+            assemblyInstruction = f"({self.arg1})\n@{self.arg2}\nD=A\n({self.arg1}.LOOP)\n@{self.arg1}.END\nD;JEQ\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@{self.arg1}.LOOP\n0;JMP\n({self.arg1}.END)"
+
+        elif self.commandType == "C_CALL":
+            assemblyInstruction=f"@{self.arg1}$ret.{self.returnCounter}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@{self.arg2}\nD=D+A\n@SP\nD=M-D\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@{self.arg1}\n0;JMP\n({self.arg1}$ret.{self.returnCounter})"
+            self.returnCounter+=1
+
+        elif self.commandType == "C_RETURN":
+            assemblyInstruction=f"@LCL\nD=M\n@R13\nM=D\n@5\nA=D-A\nD=M\n@R14\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@ARG\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@LCL\nM=D\n@R14\nA=M\n0;JMP"
+
         return assemblyInstruction
     
 class CodeWriter:
@@ -139,22 +166,37 @@ class CodeWriter:
                 else:
                     file.write("//"+self.relevantVMInstructions[i] + "\n")
                     file.write(instruction)
-        print(f"File {self.filename}.asm has been created successfully")
+        # print(f"File {self.filename}.asm has been created successfully")
 
-class VMTranslator:
-    def __init__(self,directory):
+class VMTranslatorFile:
+    def __init__(self,directory,counter=1,returnCounter=1):
         self.directory=directory.strip()
+        self.isFolder=self.getIsFolder()
         self.filename=self.getFilename()
+        self.counter=counter
+        self.returnCounter=returnCounter
         self.content = self.readFile()
         self.relevantVMInstructions = self.getVMInstructions()
         self.assemblyInstructions = self.getAssemblyInstructions()
         self.writeAssemblyFile()
 
+    def getCounters(self):
+        return self.counter,self.returnCounter
+    
+    def getIsFolder(self):
+        isFile=False
+        str=self.directory
+        if str[-3]=="." and str[-2]=="v" and str[-1]=="m":
+            isFile=True
+        return not isFile
+
+
     def getFilename(self):
-        if "\\" in self.directory:
-            return self.directory.split("\\")[-1].split('.')[0].strip()
-        else:
-            return self.directory.split('.')[0].strip()
+        if not self.isFolder:
+            if "\\" in self.directory:
+                return self.directory.split("\\")[-1].split('.')[0].strip()
+            else:
+                return self.directory.split('.')[0].strip()
 
     def readFile(self):
         with open(self.directory, "r") as file:
@@ -174,14 +216,43 @@ class VMTranslator:
     
     def getAssemblyInstructions(self):
         assemblyInstructions = []
-        parser=Parser(self.directory.split(".")[0].strip())
+        parser=Parser(self.directory.split(".")[0].strip(),self.counter,self.returnCounter)
         for line in self.relevantVMInstructions:
             assemblyInstructions.append(parser(line))
+        self.counter,self.returnCounter=parser.getCounters()
         return assemblyInstructions
     
     def writeAssemblyFile(self):
         writer = CodeWriter(self.directory.split('.')[0].strip(),self.relevantVMInstructions, self.assemblyInstructions)
         writer.write()
 
-VMTranslator("Project8\FibonacciSeries.vm")
+class VMTranslator:
+    def __init__(self,directory):
+        self.directory=directory.strip()
+        self.filename=self.getFilename()
+        self.counter=1
+        self.returnCounter=1
+        self.handleFolder()
+        self.concatenateFiles()
 
+    def getFilename(self):
+        if "\\" in self.directory:
+            return self.directory.split("\\")[-1].split('.')[0].strip()
+        else:
+            return self.directory.split('.')[0].strip()    
+    
+    def handleFolder(self):
+        for file in os.listdir(self.directory):
+            vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter)
+            self.counter,self.returnCounter=vmt.getCounters()
+
+    def concatenateFiles(self):
+        with open(f"{os.path.join(self.directory,self.filename)}.asm", "w") as outfile:
+            for file in os.listdir(self.directory):
+                if file.endswith(".asm") and file!=f"{self.filename}.asm":
+                    with open(os.path.join(self.directory, file), "r") as infile:
+                        outfile.write(infile.read())
+                        outfile.write("\n\n")
+        print(f"File {os.path.join(self.directory,self.filename)}.asm has been created successfully")
+
+VMTranslator("Project8\FibonacciElement")
