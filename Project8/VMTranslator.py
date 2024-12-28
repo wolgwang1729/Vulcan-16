@@ -1,10 +1,11 @@
 import os
 class Parser:
-    def __init__(self, directory,counter=1,returnCounter=1):
+    def __init__(self, directory,counter=1,returnCounter=1,callCounter=1):
         self.directory=directory
         self.filename=self.getFilename()
         self.counter=counter
         self.returnCounter=returnCounter
+        self.callCounter=callCounter
     
     def getFilename(self):
         if "\\" in self.directory:
@@ -19,7 +20,6 @@ class Parser:
         self.arg2 = self.getArg2()
         self.memorySegment = self.getMemorySegment()
         self.assemblyInstruction = self.getAssemblyInstruction()
-        self.counter+=1
         return self.assemblyInstruction
     
     def getCounters(self):
@@ -90,8 +90,10 @@ class Parser:
                 assemblyInstruction = "@SP\nM=M-1\nA=M\nM=-M\n@SP\nM=M+1"
             elif self.arg1 == "eq":
                 assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JEQ\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
+                self.counter+=1
             elif self.arg1 == "gt":
                 assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JGT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
+                self.counter+=1
             elif self.arg1 == "lt":
                 assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JLT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
             elif self.arg1 == "and":
@@ -140,7 +142,8 @@ class Parser:
             self.returnCounter+=1
 
         elif self.commandType == "C_RETURN":
-            assemblyInstruction=f"@LCL\nD=M\n@R13\nM=D\n@5\nA=D-A\nD=M\n@R14\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@ARG\nM=D\n@R13\nM=M-1\nA=M\nD=M\n@LCL\nM=D\n@R14\nA=M\n0;JMP"
+            assemblyInstruction=f"@LCL\nD=M\n@endFrame.{self.callCounter}\nM=D\n@5\nA=D-A\nD=M\n@retAddrs.{self.callCounter}\nM=D\n@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@endFrame.{self.callCounter}\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n@endFrame.{self.callCounter}\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n@endFrame.{self.callCounter}\nM=M-1\nA=M\nD=M\n@ARG\nM=D\n@endFrame.{self.callCounter}\nM=M-1\nA=M\nD=M\n@LCL\nM=D\n@retAddrs.{self.callCounter}\nA=M\n0;JMP"
+            self.callCounter+=1
 
         return assemblyInstruction
     
@@ -169,12 +172,13 @@ class CodeWriter:
         # print(f"File {self.filename}.asm has been created successfully")
 
 class VMTranslatorFile:
-    def __init__(self,directory,counter=1,returnCounter=1):
+    def __init__(self,directory,counter=1,returnCounter=1,callCounter=1):
         self.directory=directory.strip()
         self.isFolder=self.getIsFolder()
         self.filename=self.getFilename()
         self.counter=counter
         self.returnCounter=returnCounter
+        self.callCounter=callCounter
         self.content = self.readFile()
         self.relevantVMInstructions = self.getVMInstructions()
         self.assemblyInstructions = self.getAssemblyInstructions()
@@ -216,7 +220,7 @@ class VMTranslatorFile:
     
     def getAssemblyInstructions(self):
         assemblyInstructions = []
-        parser=Parser(self.directory.split(".")[0].strip(),self.counter,self.returnCounter)
+        parser=Parser(self.directory.split(".")[0].strip(),self.counter,self.returnCounter,self.callCounter)
         for line in self.relevantVMInstructions:
             assemblyInstructions.append(parser(line))
         self.counter,self.returnCounter=parser.getCounters()
@@ -232,6 +236,7 @@ class VMTranslator:
         self.filename=self.getFilename()
         self.counter=1
         self.returnCounter=1
+        self.callCounter=1
         self.handleFolder()
         self.concatenateFiles()
 
@@ -244,7 +249,7 @@ class VMTranslator:
     def handleFolder(self):
         for file in os.listdir(self.directory):
             if file.endswith(".vm"):
-                vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter)
+                vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter,self.callCounter)
                 self.counter,self.returnCounter=vmt.getCounters()
 
     def concatenateFiles(self):
@@ -256,4 +261,4 @@ class VMTranslator:
                         outfile.write("\n\n")
         print(f"File {os.path.join(self.directory,self.filename)}.asm has been created successfully")
 
-VMTranslator("Project8\FibonacciElement")
+VMTranslator("Project8\VMFiles\FibonacciElement")
