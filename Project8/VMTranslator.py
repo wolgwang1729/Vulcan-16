@@ -243,8 +243,9 @@ class VMTranslator:
     
     def handleFolder(self):
         for file in os.listdir(self.directory):
-            vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter)
-            self.counter,self.returnCounter=vmt.getCounters()
+            if file.endswith(".vm"):
+                vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter)
+                self.counter,self.returnCounter=vmt.getCounters()
 
     def concatenateFiles(self):
         with open(f"{os.path.join(self.directory,self.filename)}.asm", "w") as outfile:
