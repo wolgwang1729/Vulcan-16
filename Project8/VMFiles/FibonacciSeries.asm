@@ -135,7 +135,7 @@ M=M-1
 A=M
 D=M
 @COMPUTE_ELEMENT
-D;JGT
+D;JNE
 
 //goto END
 @END

@@ -175,7 +175,6 @@ class CodeWriter:
 class VMTranslatorFile:
     def __init__(self,directory,counter=1,returnCounter=1,callCounter=1):
         self.directory=directory.strip()
-        self.isFolder=self.getIsFolder()
         self.filename=self.getFilename()
         self.counter=counter
         self.returnCounter=returnCounter
@@ -188,20 +187,11 @@ class VMTranslatorFile:
     def getCounters(self):
         return self.counter,self.returnCounter
     
-    def getIsFolder(self):
-        isFile=False
-        str=self.directory
-        if str[-3]=="." and str[-2]=="v" and str[-1]=="m":
-            isFile=True
-        return not isFile
-
-
     def getFilename(self):
-        if not self.isFolder:
-            if "\\" in self.directory:
-                return self.directory.split("\\")[-1].split('.')[0].strip()
-            else:
-                return self.directory.split('.')[0].strip()
+        if "\\" in self.directory:
+            return self.directory.split("\\")[-1].split('.')[0].strip()
+        else:
+            return self.directory.split('.')[0].strip()
 
     def readFile(self):
         with open(self.directory, "r") as file:
@@ -235,32 +225,46 @@ class VMTranslator:
     def __init__(self,directory):
         self.directory=directory.strip()
         self.filename=self.getFilename()
+        self.isFile=self.getIsFile()
         self.counter=1
         self.returnCounter=1
         self.callCounter=1
+        self.handleFile()
         self.handleFolder()
         self.concatenateFiles()
+
+    def getIsFile(self):
+        if self.directory.endswith(".vm"):
+            return True
+        return False
 
     def getFilename(self):
         if "\\" in self.directory:
             return self.directory.split("\\")[-1].split('.')[0].strip()
         else:
             return self.directory.split('.')[0].strip()    
+        
+    def handleFile(self):
+        if self.isFile:
+            vmt=VMTranslatorFile(self.directory,self.counter,self.returnCounter,self.callCounter)
     
     def handleFolder(self):
-        for file in os.listdir(self.directory):
-            if file.endswith(".vm"):
-                vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter,self.callCounter)
-                self.counter,self.returnCounter=vmt.getCounters()
+        if not self.isFile:
+            for file in os.listdir(self.directory):
+                if file.endswith(".vm"):
+                    vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter,self.callCounter)
+                    self.counter,self.returnCounter=vmt.getCounters()
 
     def concatenateFiles(self):
-        with open(f"{os.path.join(self.directory,self.filename)}.asm", "w") as outfile:
-            outfile.write("//BootstrapCode\n@256\nD=A\n@SP\nM=D\n\n//call Sys.init\n@Sys.init$ret.0\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@0\nD=D+A\n@SP\nD=M-D\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@Sys.init\n0;JMP\n(Sys.init$ret.0)\n\n")
-            for file in os.listdir(self.directory):
-                if file.endswith(".asm") and file!=f"{self.filename}.asm":
-                    with open(os.path.join(self.directory, file), "r") as infile:
-                        outfile.write(infile.read())
+        if not self.isFile:
+            with open(f"{os.path.join(self.directory,self.filename)}.asm", "w") as outfile:
+                outfile.write("//BootstrapCode\n@256\nD=A\n@SP\nM=D\n\n//call Sys.init\n@Sys.init$ret.0\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@0\nD=D+A\n@SP\nD=M-D\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@Sys.init\n0;JMP\n(Sys.init$ret.0)\n\n")
+                for file in os.listdir(self.directory):
+                    if file.endswith(".asm") and file!=f"{self.filename}.asm":
+                        with open(os.path.join(self.directory, file), "r") as infile:
+                            outfile.write(infile.read())
                         outfile.write("\n\n")
-        print(f"File {os.path.join(self.directory,self.filename)}.asm has been created successfully")
+                        os.remove(os.path.join(self.directory, file))
+            print(f"File {os.path.join(self.directory,self.filename)}.asm has been created successfully")
 
-VMTranslator("Project8\VMFiles\FibonacciElement")
+VMTranslator("Project8\VMFiles\Sys.vm")
