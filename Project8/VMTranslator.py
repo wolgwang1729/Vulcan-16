@@ -96,6 +96,7 @@ class Parser:
                 self.counter+=1
             elif self.arg1 == "lt":
                 assemblyInstruction = f"@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@TRUE.{self.counter}\nD;JLT\n@SP\nA=M\nM=0\n@SP\nM=M+1\n@CONTINUE.{self.counter}\n0;JMP\n(TRUE.{self.counter})\n@SP\nA=M\nM=-1\n@SP\nM=M+1\n(CONTINUE.{self.counter})"
+                self.counter+=1
             elif self.arg1 == "and":
                 assemblyInstruction = "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1"
             elif self.arg1 == "or":
@@ -254,6 +255,7 @@ class VMTranslator:
 
     def concatenateFiles(self):
         with open(f"{os.path.join(self.directory,self.filename)}.asm", "w") as outfile:
+            outfile.write("//BootstrapCode\n@256\nD=A\n@SP\nM=D\n\n//call Sys.init\n@Sys.init$ret.0\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@0\nD=D+A\n@SP\nD=M-D\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@Sys.init\n0;JMP\n(Sys.init$ret.0)\n\n")
             for file in os.listdir(self.directory):
                 if file.endswith(".asm") and file!=f"{self.filename}.asm":
                     with open(os.path.join(self.directory, file), "r") as infile:
