@@ -1,0 +1,63 @@
+class Main {
+    function void main() {
+        var int userInput;
+        var int randomNumber;
+        var int counter;
+
+        do Output.printString("                        Guess a number");
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.printString("If you guess the number correctly, you win!");
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        let counter = 0;
+        let userInput = Keyboard.readInt("Enter a number between 0 and 10: ");
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.printString("Are you ready for the verdict? Press enter to continue.");
+        let counter = Main.measureTime();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Random.setSeed(counter);
+		do Output.println();
+        do Output.println();
+        let randomNumber = Random.randRange(10);
+
+        if (userInput = randomNumber) {
+            do Output.printString("Congratulations! You guessed the number correctly!");
+            do Output.println();
+        } else {
+            do Output.printString("Sorry, you guessed the number incorrectly.");
+            do Output.println();
+            do Output.println();
+            do Output.printString("The correct number was: ");
+            do Output.printInt(randomNumber);
+        }
+        return;
+    }
+
+    function int measureTime() {
+        var int msCounter;
+        var char input;
+        var int key;
+        let msCounter = 0;
+
+        while (true) {
+			do Sys.wait(1);
+            let msCounter = msCounter + 1;
+            let key= Keyboard.keyPressed();
+			if(key=128) {
+                    return msCounter;
+                }
+        }
+
+        return msCounter;
+    }
+}
