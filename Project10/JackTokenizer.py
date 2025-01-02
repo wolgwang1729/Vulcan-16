@@ -214,6 +214,7 @@ with open(r"Project10\TokenizerOutput\ArrayTest\Main.xml","w") as file:
         else:
             file.write(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>\n')
     file.write("</tokens>")
+    file.write("\n")
 
 while(jt.hasMoreTokens()):
     jt.advance()
