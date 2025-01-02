@@ -198,10 +198,10 @@ class JackTokenizer:
         else:
             self.currentToken = None 
 
-jt=JackTokenizer(r"Project10\TestFiles\ArrayTest\Main.jack")
+jt=JackTokenizer(r"Project10\TestFiles\Square\SquareGame.jack")
 
 
-with open(r"Project10\TokenizerOutput\ArrayTest\Main.xml","w") as file:
+with open(r"Project10\TokenizerOutput\Square\SquareGame.xml","w") as file:
     file.write("<tokens>\n")
     while(jt.hasMoreTokens()):
         jt.advance()
@@ -215,7 +215,3 @@ with open(r"Project10\TokenizerOutput\ArrayTest\Main.xml","w") as file:
             file.write(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>\n')
     file.write("</tokens>")
     file.write("\n")
-
-while(jt.hasMoreTokens()):
-    jt.advance()
-    print(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>')
