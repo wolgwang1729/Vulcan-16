@@ -205,7 +205,14 @@ with open(r"Project10\TokenizerOutput\ArrayTest\Main.xml","w") as file:
     file.write("<tokens>\n")
     while(jt.hasMoreTokens()):
         jt.advance()
-        file.write(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>\n')
+        if(jt.currentToken[0]=="\""):
+            file.write(f'<{jt.getTokenType()}> {jt.stringVal()} </{jt.getTokenType()}>\n')
+        elif(jt.currentToken==">"):
+            file.write(f'<{jt.getTokenType()}> &gt; </{jt.getTokenType()}>\n')
+        elif(jt.currentToken=="<"):
+            file.write(f'<{jt.getTokenType()}> &lt; </{jt.getTokenType()}>\n')
+        else:
+            file.write(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>\n')
     file.write("</tokens>")
 
 while(jt.hasMoreTokens()):
