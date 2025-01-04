@@ -1,4 +1,5 @@
-class JackTokenizer:
+import os
+class JackTokenizerFile:
     def __init__(self,filePath):
         self.filePath = filePath
         self.fileContent = self.getFileContent()
@@ -198,20 +199,30 @@ class JackTokenizer:
         else:
             self.currentToken = None 
 
-jt=JackTokenizer(r"Project10\TestFiles\Square\SquareGame.jack")
+class JackTokenizer:
+    def __init__(self,directory):
+        self.directory=directory
+        self.createTXML()
 
+    def createTXML(self):
+        for file in os.listdir(self.directory):
+            if file.endswith(".jack"):
+                jt=JackTokenizerFile(self.directory+"\\"+file)
+                with open(self.directory+"\\"+file[:-5]+"T.xml","w") as file:
+                    file.write("<tokens>\n")
+                    while(jt.hasMoreTokens()):
+                        jt.advance()
+                        if(jt.currentToken[0]=="\""):
+                            file.write(f'<{jt.getTokenType()}> {jt.stringVal()} </{jt.getTokenType()}>\n')
+                        elif(jt.currentToken==">"):
+                            file.write(f'<{jt.getTokenType()}> &gt; </{jt.getTokenType()}>\n')
+                        elif(jt.currentToken=="<"):
+                            file.write(f'<{jt.getTokenType()}> &lt; </{jt.getTokenType()}>\n')
+                        elif(jt.currentToken=="&"):
+                            file.write(f'<{jt.getTokenType()}> &amp; </{jt.getTokenType()}>\n')
+                        else:
+                            file.write(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>\n')
+                    file.write("</tokens>")
+                    file.write("\n")
 
-with open(r"Project10\TokenizerOutput\Square\SquareGame.xml","w") as file:
-    file.write("<tokens>\n")
-    while(jt.hasMoreTokens()):
-        jt.advance()
-        if(jt.currentToken[0]=="\""):
-            file.write(f'<{jt.getTokenType()}> {jt.stringVal()} </{jt.getTokenType()}>\n')
-        elif(jt.currentToken==">"):
-            file.write(f'<{jt.getTokenType()}> &gt; </{jt.getTokenType()}>\n')
-        elif(jt.currentToken=="<"):
-            file.write(f'<{jt.getTokenType()}> &lt; </{jt.getTokenType()}>\n')
-        else:
-            file.write(f'<{jt.getTokenType()}> {jt.currentToken} </{jt.getTokenType()}>\n')
-    file.write("</tokens>")
-    file.write("\n")
+JackTokenizer("Project10\TestFiles\Square")
