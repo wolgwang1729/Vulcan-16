@@ -489,10 +489,6 @@ class CompilationEngine:
         self.indentation += 1
 
         self.compileTerm()
-
-        # print(self.tokenizer.currentToken)
-        # print(self.tokenizer.symbol())
-
         while self.tokenizer.symbol() in ["+", "-", "*", "/", "&amp;", "|", "&lt;", "&gt;", "="]:
             self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
