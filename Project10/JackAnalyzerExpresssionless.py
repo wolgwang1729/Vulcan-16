@@ -1,3 +1,5 @@
+import os
+
 class JackTokenizerFile:
     def __init__(self,filePath):
         self.filePath = filePath
@@ -160,7 +162,7 @@ class JackTokenizerFile:
 
     def keyWord(self):
         if(self.tokenType()=="KEYWORD"):
-            return self.currentToken.upper()
+            return self.currentToken
         else:
             return None
         
@@ -208,8 +210,7 @@ class JackTokenizerFile:
 
     def get_xml(self):
         return "<" + self.getTokenType() + "> " + self.currentToken + " </" + self.getTokenType() + ">"
-
-
+    
 class CompilationEngine:
     def __init__(self, tokenizer, output_file):
         self.tokenizer = tokenizer
@@ -358,24 +359,7 @@ class CompilationEngine:
         self.write("<parameterList>")
         self.indentation += 1
 
-        if(self.tokenizer.keyWord() not in ["int", "char", "boolean"] and self.tokenizer.tokenType()!="IDENTIFIER"):
-            print("Error: Expected keyword int, char, boolean or class name")
-            return
-        else:
-            self.write(self.tokenizer.get_xml())
-            self.tokenizer.advance()
-
-        if(self.tokenizer.tokenType()!="IDENTIFIER"):
-            print("Error: Expected variable name")
-            return
-        else:
-            self.write(self.tokenizer.get_xml())
-            self.tokenizer.advance()
-
-        while self.tokenizer.symbol()==",":
-            self.write(self.tokenizer.get_xml())
-            self.tokenizer.advance()
-
+        if(self.tokenizer.keyWord() in ["int", "char", "boolean"] or self.tokenizer.tokenType()=="IDENTIFIER"):
             if(self.tokenizer.keyWord() not in ["int", "char", "boolean"] and self.tokenizer.tokenType()!="IDENTIFIER"):
                 print("Error: Expected keyword int, char, boolean or class name")
                 return
@@ -389,6 +373,24 @@ class CompilationEngine:
             else:
                 self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
+
+            while self.tokenizer.symbol()==",":
+                self.write(self.tokenizer.get_xml())
+                self.tokenizer.advance()
+
+                if(self.tokenizer.keyWord() not in ["int", "char", "boolean"] and self.tokenizer.tokenType()!="IDENTIFIER"):
+                    print("Error: Expected keyword int, char, boolean or class name")
+                    return
+                else:
+                    self.write(self.tokenizer.get_xml())
+                    self.tokenizer.advance()
+
+                if(self.tokenizer.tokenType()!="IDENTIFIER"):
+                    print("Error: Expected variable name")
+                    return
+                else:
+                    self.write(self.tokenizer.get_xml())
+                    self.tokenizer.advance()
 
         self.indentation -= 1
         self.write("</parameterList>")
@@ -694,4 +696,84 @@ class CompilationEngine:
         self.indentation -= 1
         self.write("</returnStatement>")
 
+    def compileExpression(self):
+        self.write("<expression>")
+        self.indentation += 1
+        self.write("<term>")
+        self.indentation += 1
+        self.write(self.tokenizer.get_xml())
+        self.tokenizer.advance()
+        self.indentation -= 1
+        self.write("</term>")
+        self.indentation -= 1
+        self.write("</expression>")
 
+    def compileSubroutineCall(self):
+        if(self.tokenizer.tokenType()!="IDENTIFIER"):
+            print("Error: Expected class name or variable name")
+            return
+        else:
+            self.write(self.tokenizer.get_xml())
+            self.tokenizer.advance()
+
+        if(self.tokenizer.symbol()=="."):
+            self.write(self.tokenizer.get_xml())
+            self.tokenizer.advance()
+
+            if(self.tokenizer.tokenType()!="IDENTIFIER"):
+                print("Error: Expected subroutine name")
+                return
+            else:
+                self.write(self.tokenizer.get_xml())
+                self.tokenizer.advance()
+
+        if(self.tokenizer.symbol()!="("):
+            print("Error: Expected symbol (")
+            return
+        else:
+            self.write(self.tokenizer.get_xml())
+            self.tokenizer.advance()
+        
+        self.write("<expressionList>")
+        self.indentation += 1
+        if(self.tokenizer.currentToken !=")"):
+            self.compileExpression()
+        while self.tokenizer.symbol()==",":
+            self.write(self.tokenizer.get_xml())
+            self.tokenizer.advance()
+            if(self.tokenizer.currentToken!=")"):
+                self.compileExpression()
+        self.indentation -= 1
+
+        self.write("</expressionList>")
+        if(self.tokenizer.symbol()!=")"):
+            print("Error: Expected symbol )")
+            return
+        else:
+            self.write(self.tokenizer.get_xml())
+            self.tokenizer.advance()
+
+
+class JackAnalyzer:
+    def __init__(self,directoryPath):
+        self.directoryPath = directoryPath
+        self.files = self.getFiles()
+        self.createXML()
+
+    def getFiles(self):
+        files=[]
+        for file in os.listdir(self.directoryPath):
+            if file.endswith(".jack"):
+                files.append(file)
+        return files
+    
+    def createXML(self):
+        for file in self.files:
+            print(file)
+            tokenizer = JackTokenizerFile(self.directoryPath + "/" + file)
+            output_file = open(self.directoryPath + "/" + file[:-5] + ".xml", "w")
+            compilationEngine = CompilationEngine(tokenizer, output_file)
+            compilationEngine.compileClass()
+            output_file.close()
+
+JackAnalyzer("Project10\OutputFiles\ExpressionLessSquare")
