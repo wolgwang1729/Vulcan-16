@@ -1,0 +1,110 @@
+<tokens>
+<keyword> class </keyword>
+<identifier> Main </identifier>
+<symbol> { </symbol>
+<keyword> function </keyword>
+<keyword> void </keyword>
+<identifier> main </identifier>
+<symbol> ( </symbol>
+<symbol> ) </symbol>
+<symbol> { </symbol>
+<keyword> var </keyword>
+<identifier> Array </identifier>
+<identifier var 0> a </identifier var 0>
+<symbol> ; </symbol>
+<keyword> var </keyword>
+<keyword> int </keyword>
+<identifier var 1> length </identifier var 1>
+<symbol> ; </symbol>
+<keyword> var </keyword>
+<keyword> int </keyword>
+<identifier var 2> i </identifier var 2>
+<symbol> , </symbol>
+<identifier> sum </identifier>
+<symbol> ; </symbol>
+<keyword> let </keyword>
+<identifier var 1> length </identifier var 1>
+<symbol> = </symbol>
+<identifier> Keyboard </identifier>
+<symbol> . </symbol>
+<identifier> readInt </identifier>
+<symbol> ( </symbol>
+<stringConstant> How many numbers?  </stringConstant>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+<keyword> let </keyword>
+<identifier var 0> a </identifier var 0>
+<symbol> = </symbol>
+<identifier> Array </identifier>
+<symbol> . </symbol>
+<identifier> new </identifier>
+<symbol> ( </symbol>
+<identifier var 1> length </identifier var 1>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+<keyword> let </keyword>
+<identifier var 2> i </identifier var 2>
+<symbol> = </symbol>
+<integerConstant> 0 </integerConstant>
+<symbol> ; </symbol>
+<keyword> while </keyword>
+<symbol> ( </symbol>
+<identifier var 2> i </identifier var 2>
+<symbol> &lt; </symbol>
+<identifier var 1> length </identifier var 1>
+<symbol> ) </symbol>
+<symbol> { </symbol>
+<keyword> let </keyword>
+<identifier var 0> a </identifier var 0>
+<symbol> [ </symbol>
+<identifier var 2> i </identifier var 2>
+<symbol> ] </symbol>
+<symbol> = </symbol>
+<identifier> Keyboard </identifier>
+<symbol> . </symbol>
+<identifier> readInt </identifier>
+<symbol> ( </symbol>
+<stringConstant> Enter a number:  </stringConstant>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+<keyword> let </keyword>
+<identifier> sum </identifier>
+<symbol> = </symbol>
+<identifier> sum </identifier>
+<symbol> + </symbol>
+<identifier var 0> a </identifier var 0>
+<symbol> [ </symbol>
+<identifier var 2> i </identifier var 2>
+<symbol> ] </symbol>
+<symbol> ; </symbol>
+<keyword> let </keyword>
+<identifier var 2> i </identifier var 2>
+<symbol> = </symbol>
+<identifier var 2> i </identifier var 2>
+<symbol> + </symbol>
+<integerConstant> 1 </integerConstant>
+<symbol> ; </symbol>
+<symbol> } </symbol>
+<keyword> do </keyword>
+<identifier> Output </identifier>
+<symbol> . </symbol>
+<identifier> printString </identifier>
+<symbol> ( </symbol>
+<stringConstant> The average is  </stringConstant>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+<keyword> do </keyword>
+<identifier> Output </identifier>
+<symbol> . </symbol>
+<identifier> printInt </identifier>
+<symbol> ( </symbol>
+<identifier> sum </identifier>
+<symbol> / </symbol>
+<identifier var 1> length </identifier var 1>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+<keyword> return </keyword>
+<symbol> ; </symbol>
+<symbol> } </symbol>
+<symbol> } </symbol>
+</tokens>
