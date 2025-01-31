@@ -457,9 +457,6 @@ class CompilationEngine:
 
         self.compileSubroutineBody()
 
-        self.indentation -= 1
-        self.write("</subroutineDec>")
-
     def compileParameterList(self):
 
         currType=None
@@ -768,14 +765,11 @@ class CompilationEngine:
             self.tokenizer.advance()
 
     def compileReturn(self):
-        self.write("<returnStatement>")
-        self.indentation += 1
-
         if(self.tokenizer.keyWord()!="return"):
             print("Error: Expected keyword return")
             return
         else:
-            self.write(self.tokenizer.get_xml())
+            self.vmWriter.writeReturn()
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!=";"):
@@ -785,11 +779,8 @@ class CompilationEngine:
             print("Error: Expected symbol ;")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
-        self.indentation -= 1
-        self.write("</returnStatement>")
 
     #Expressions
     def compileExpression(self):
@@ -797,32 +788,39 @@ class CompilationEngine:
         self.compileTerm()
 
         while self.tokenizer.symbol() in ["+", "-", "*", "/", "&amp;", "|", "&lt;", "&gt;", "="]:
-            self.write(self.tokenizer.get_xml())
+            op=""
+            if(self.tokenizer.symbol()=="+"):
+                op="add"
+            elif(self.tokenizer.symbol()=="-"):
+                op="sub"
+            elif(self.tokenizer.symbol()=="*"):
+                op="call Math.multiply 2"
+            elif(self.tokenizer.symbol()=="/"):
+                op="call Math.divide 2"
+            elif(self.tokenizer.symbol()=="&amp;"):
+                op="and"
+            elif(self.tokenizer.symbol()=="|"):
+                op="or"
+            elif(self.tokenizer.symbol()=="&lt;"):
+                op="lt"
+            elif(self.tokenizer.symbol()=="&gt;"):
+                op="gt"
+            elif(self.tokenizer.symbol()=="="):
+                op="eq"
             self.tokenizer.advance()
             self.compileTerm()
-
-        self.indentation -= 1
-        self.write("</expression>")
+            self.vmWriter.writeArithmetic(op)
 
     def compileTerm(self):
-        self.write("<term>")
-        self.indentation += 1
-
         if(self.tokenizer.tokenType()=="INT_CONST"):
-            self.write(self.tokenizer.get_xml())
+            self.vmWriter.writePush("constant",self.tokenizer.intVal())
             self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="STRING_CONST"):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
         elif(self.tokenizer.keyWord() in ["true", "false", "null", "this"]):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="IDENTIFIER"):
-            currToken=self.tokenizer.currentToken
-            if(self.symbolTable.kindOf(currToken)!=None):
-                self.write(self.tokenizer.get_xml(f"{self.symbolTable.kindOf(currToken)} {self.symbolTable.typeOf(currToken)} {self.symbolTable.indexOf(currToken)}"))
-            else:
-                self.write(self.tokenizer.get_xml())
+            self.vmWriter.writePush(self.symbolTable.kindOf(self.tokenizer.identifier()),self.symbolTable.indexOf(self.tokenizer.identifier()))
             self.tokenizer.advance()
 
             if(self.tokenizer.symbol()=="["):
@@ -840,7 +838,6 @@ class CompilationEngine:
             elif(self.tokenizer.symbol()=="(" or self.tokenizer.symbol()=="."):
                 self.compileSubroutineCall()
         elif(self.tokenizer.symbol()=="("):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
             self.compileExpression()
 
@@ -848,29 +845,23 @@ class CompilationEngine:
                 print("Error: Expected symbol )")
                 return
             else:
-                self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
         elif(self.tokenizer.symbol() in ["-", "~"]):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
             self.compileTerm()
-
-        self.indentation -= 1
-        self.write("</term>")
 
     def compileSubroutineCall(self):
 
         callName=""
 
         if(self.tokenizer.symbol()=="."):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
             if(self.tokenizer.tokenType()!="IDENTIFIER"):
                 print("Error: Expected subroutine name")
                 return
             else:
-                self.write(self.tokenizer.get_xml())
+                callName+=self.tokenizer.currentToken
                 self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="IDENTIFIER"):
             callName+=self.tokenizer.currentToken
@@ -889,7 +880,6 @@ class CompilationEngine:
             print("Error: Expected symbol (")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         self.compileExpressionList()
@@ -898,22 +888,22 @@ class CompilationEngine:
             print("Error: Expected symbol )")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
+        
+        self.vmWriter.writeCall(callName,self.nArgs)
 
     def compileExpressionList(self):
 
         self.nArgs = 0
 
         if(self.tokenizer.symbol()!=")"):
+            self.nArgs+=1
             self.compileExpression()
 
             while self.tokenizer.symbol()==",":
                 self.tokenizer.advance()
+                self.nArgs+=1
                 self.compileExpression()
-
-        self.indentation -= 1
-        self.write("</expressionList>")
 
 class JackCompiler:
     def __init__(self,directoryPath):
