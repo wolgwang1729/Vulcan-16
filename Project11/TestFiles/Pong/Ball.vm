@@ -1,3 +1,4 @@
+// Compiled Ball.jack:
 function Ball.new 0
     push constant 15
     call Memory.alloc 1

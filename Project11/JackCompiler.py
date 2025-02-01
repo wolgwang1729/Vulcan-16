@@ -896,9 +896,9 @@ class CompilationEngine:
             callName+=self.subroutineCallName
             if(callName in self.symbolTable.classScope or callName in self.symbolTable.subroutineScope):
                 if(callName in self.symbolTable.classScope):
-                    self.vmWriter.writePush("this",0)
+                    self.vmWriter.writePush("this",self.symbolTable.indexOf(callName))
                 else:
-                    self.vmWriter.writePush("local",0)
+                    self.vmWriter.writePush("local",self.symbolTable.indexOf(callName))
                 callName=self.symbolTable.typeOf(callName)
                 flagNArgs=True
             self.subroutineCallName=""
@@ -916,9 +916,9 @@ class CompilationEngine:
             if(self.subroutineKind=="method" or self.subroutineKind=="function" or self.subroutineKind=="constructor"):
                 if(callName in self.symbolTable.classScope or callName in self.symbolTable.subroutineScope):
                     if(callName in self.symbolTable.classScope):
-                        self.vmWriter.writePush("this",0)
+                        self.vmWriter.writePush("this",self.symbolTable.indexOf(callName))
                     else:
-                        self.vmWriter.writePush("local",0)
+                        self.vmWriter.writePush("local",self.symbolTable.indexOf(callName))
                     callName=self.symbolTable.typeOf(callName)
                     flagNArgs=True
             self.tokenizer.advance()

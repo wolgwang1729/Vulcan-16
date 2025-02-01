@@ -1,3 +1,4 @@
+// Compiled Main.jack:
 function Main.main 1
     call PongGame.newInstance 0
     pop temp 0

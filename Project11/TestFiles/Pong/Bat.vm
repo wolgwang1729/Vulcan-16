@@ -1,3 +1,4 @@
+// Compiled Bat.jack:
 function Bat.new 0
     push constant 5
     call Memory.alloc 1
