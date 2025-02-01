@@ -259,10 +259,15 @@ class SymbolTable:
                 return "argument"
             elif(self.subroutineScope[name][1]=="var"):
                 return "local"
+            elif(self.subroutineScope[name][1]=="field"):
+                return "this"
             else:
                 return self.subroutineScope[name][1]
         elif(name in self.classScope):
-            return self.classScope[name][1]
+            if(self.classScope[name][1]=="field"):
+                return "this"
+            else:
+                return self.classScope[name][1]
         else:
             return None
 
@@ -327,6 +332,7 @@ class CompilationEngine:
         self.nArgs = 0
         self.subroutineCallName=""
         self.labelCount=0
+        self.subroutineKind=None
 
     #Program Structure
     def compileClass(self):
@@ -378,7 +384,7 @@ class CompilationEngine:
             print("Error: Expected keyword int, char, boolean or class name")
             return
         else:
-            currType = self.tokenizer.keyWord()
+            currType = self.tokenizer.keyWord() or self.tokenizer.identifier()
             self.tokenizer.advance()
 
         if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -389,7 +395,6 @@ class CompilationEngine:
             self.tokenizer.advance()
 
         while self.tokenizer.symbol()==",":
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
             if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -414,6 +419,7 @@ class CompilationEngine:
             return
         else:
             self.symbolTable.startSubroutine()
+            self.subroutineKind=self.tokenizer.keyWord()
             if(self.tokenizer.keyWord()=="method"):
                 self.symbolTable.define("this",self.className,"arg")
                 self.nParams = 1
@@ -457,6 +463,8 @@ class CompilationEngine:
         if(isVoid):
             self.vmWriter.writePush("constant",0)
             self.vmWriter.writeReturn()
+
+        # print(self.symbolTable.subroutineScope)
 
     def compileParameterList(self):
 
@@ -508,6 +516,14 @@ class CompilationEngine:
             self.compileVarDec()
 
         self.vmWriter.writeFunction(f"{self.className}.{self.functionName}",self.symbolTable.varCount("var"))
+        if(self.subroutineKind=="constructor"):
+                self.vmWriter.writePush("constant",self.symbolTable.varCount("field"))
+                self.vmWriter.writeCall("Memory.alloc",1)
+                self.vmWriter.writePop("pointer",0)
+        elif(self.subroutineKind=="method"):
+            self.vmWriter.writePush("argument",0)
+            self.vmWriter.writePop("pointer",0)
+        
 
         self.compileStatements()
 
@@ -532,7 +548,7 @@ class CompilationEngine:
             print("Error: Expected keyword int, char, boolean or class name")
             return
         else:
-            currType = self.tokenizer.keyWord()
+            currType = self.tokenizer.keyWord() or self.tokenizer.identifier()
             self.tokenizer.advance()
 
         if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -660,6 +676,7 @@ class CompilationEngine:
         else:
             self.tokenizer.advance()
 
+        self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount2}")
         if(self.tokenizer.keyWord()=="else"):
             self.tokenizer.advance()
 
@@ -669,7 +686,6 @@ class CompilationEngine:
             else:
                 self.tokenizer.advance()
 
-            self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount2}")
             self.compileStatements()
 
             if(self.tokenizer.symbol()!="}"):
@@ -852,6 +868,7 @@ class CompilationEngine:
     def compileSubroutineCall(self):
 
         callName=""
+        flagNArgs=False
 
         if(self.tokenizer.symbol()=="."):
             callName+=self.subroutineCallName
@@ -867,6 +884,14 @@ class CompilationEngine:
                 self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="IDENTIFIER"):
             callName+=self.tokenizer.currentToken
+            if(self.subroutineKind=="method" or self.subroutineKind=="function"):
+                if(callName in self.symbolTable.classScope or callName in self.symbolTable.subroutineScope):
+                    if(callName in self.symbolTable.classScope):
+                        self.vmWriter.writePush("this",0)
+                    else:
+                        self.vmWriter.writePush("local",0)
+                    callName=self.symbolTable.typeOf(callName)
+                    flagNArgs=True
             self.tokenizer.advance()
             if(self.tokenizer.symbol()=="."):
                 callName+="."
@@ -877,6 +902,10 @@ class CompilationEngine:
                 else:
                     callName+=self.tokenizer.currentToken
                     self.tokenizer.advance()
+            else:
+                callName=f"{self.className}.{callName}"
+                self.vmWriter.writePush("pointer",0)
+                flagNArgs=True
                 
         if(self.tokenizer.symbol()!="("):
             print("Error: Expected symbol (")
@@ -891,8 +920,10 @@ class CompilationEngine:
             return
         else:
             self.tokenizer.advance()
-        
-        self.vmWriter.writeCall(callName,self.nArgs)
+        if(flagNArgs):
+            self.vmWriter.writeCall(callName,self.nArgs+1)
+        else:
+            self.vmWriter.writeCall(callName,self.nArgs)
 
     def compileExpressionList(self):
 
@@ -932,4 +963,4 @@ class JackCompiler:
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\Seven")
+JackCompiler("Project11\TestFiles\Square")
