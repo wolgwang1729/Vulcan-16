@@ -369,6 +369,8 @@ class CompilationEngine:
         else:
             self.tokenizer.advance()
 
+        # print(self.symbolTable.classScope)
+
     def compileClassVarDec(self):
         currkind=None
         currType=None
@@ -892,6 +894,13 @@ class CompilationEngine:
 
         if(self.tokenizer.symbol()=="."):
             callName+=self.subroutineCallName
+            if(callName in self.symbolTable.classScope or callName in self.symbolTable.subroutineScope):
+                if(callName in self.symbolTable.classScope):
+                    self.vmWriter.writePush("this",0)
+                else:
+                    self.vmWriter.writePush("local",0)
+                callName=self.symbolTable.typeOf(callName)
+                flagNArgs=True
             self.subroutineCallName=""
             callName+="."
             self.tokenizer.advance()
@@ -904,7 +913,7 @@ class CompilationEngine:
                 self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="IDENTIFIER"):
             callName+=self.tokenizer.currentToken
-            if(self.subroutineKind=="method" or self.subroutineKind=="function"):
+            if(self.subroutineKind=="method" or self.subroutineKind=="function" or self.subroutineKind=="constructor"):
                 if(callName in self.symbolTable.classScope or callName in self.symbolTable.subroutineScope):
                     if(callName in self.symbolTable.classScope):
                         self.vmWriter.writePush("this",0)
@@ -983,4 +992,4 @@ class JackCompiler:
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\Average")
+JackCompiler("Project11\TestFiles\Pong")
