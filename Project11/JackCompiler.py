@@ -477,7 +477,7 @@ class CompilationEngine:
                 print("Error: Expected keyword int, char, boolean or class name")
                 return
             else:
-                currType = self.tokenizer.keyWord()
+                currType = self.tokenizer.keyWord() or self.tokenizer.identifier()
                 self.tokenizer.advance()
 
             if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -992,4 +992,4 @@ class JackCompiler:
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\Pong")
+JackCompiler("Project11\TestFiles\ComplexArrays")
