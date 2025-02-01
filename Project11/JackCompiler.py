@@ -255,7 +255,12 @@ class SymbolTable:
 
     def kindOf(self,name):
         if(name in self.subroutineScope):
-            return self.subroutineScope[name][1]
+            if(self.subroutineScope[name][1]=="arg"):
+                return "argument"
+            elif(self.subroutineScope[name][1]=="var"):
+                return "local"
+            else:
+                return self.subroutineScope[name][1]
         elif(name in self.classScope):
             return self.classScope[name][1]
         else:
@@ -321,6 +326,7 @@ class CompilationEngine:
         self.nParams = 0
         self.nArgs = 0
         self.subroutineCallName=""
+        self.labelCount=0
 
     #Program Structure
     def compileClass(self):
@@ -473,7 +479,6 @@ class CompilationEngine:
                 self.tokenizer.advance()
 
             while self.tokenizer.symbol()==",":
-                self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
 
                 if(self.tokenizer.keyWord() not in ["int", "char", "boolean"] and self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -612,120 +617,116 @@ class CompilationEngine:
         else:
             self.tokenizer.advance()
 
-        print(self.symbolTable.subroutineScope)
-
     def compileIf(self):
-        self.write("<ifStatement>")
-        self.indentation += 1
-
         if(self.tokenizer.keyWord()!="if"):
             print("Error: Expected keyword if")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!="("):
             print("Error: Expected symbol (")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         self.compileExpression()
+        self.vmWriter.writeArithmetic("not")
 
         if(self.tokenizer.symbol()!=")"):
             print("Error: Expected symbol )")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!="{"):
             print("Error: Expected symbol {")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
+        tempLabelCount1=self.labelCount
+        tempLabelCount2=self.labelCount+1
+        self.labelCount+=2
+
+
+        self.vmWriter.writeIf(f"{self.className}_{tempLabelCount1}")
         self.compileStatements()
+        self.vmWriter.writeGoto(f"{self.className}_{tempLabelCount2}")
 
         if(self.tokenizer.symbol()!="}"):
             print("Error: Expected symbol }")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.keyWord()=="else"):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
             if(self.tokenizer.symbol()!="{"):
                 print("Error: Expected symbol {")
                 return
             else:
-                self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
 
+            self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount1}")
             self.compileStatements()
 
             if(self.tokenizer.symbol()!="}"):
                 print("Error: Expected symbol }")
                 return
             else:
-                self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
 
-        self.indentation -= 1
-        self.write("</ifStatement>")
+        self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount2}")
 
     def compileWhile(self):
-        self.write("<whileStatement>")
-        self.indentation += 1
+
+        tempLabelCount1=self.labelCount
+        tempLabelCount2=self.labelCount+1
+        self.labelCount+=2
+        self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount1}")
 
         if(self.tokenizer.keyWord()!="while"):
             print("Error: Expected keyword while")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!="("):
             print("Error: Expected symbol (")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         self.compileExpression()
+
+        self.vmWriter.writeArithmetic("not")
 
         if(self.tokenizer.symbol()!=")"):
             print("Error: Expected symbol )")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!="{"):
             print("Error: Expected symbol {")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
+        self.vmWriter.writeIf(f"{self.className}_{tempLabelCount2}")
         self.compileStatements()
+        self.vmWriter.writeGoto(f"{self.className}_{tempLabelCount1}")
+
+        self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount2}")
 
         if(self.tokenizer.symbol()!="}"):
             print("Error: Expected symbol }")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
-
-        self.indentation -= 1
-        self.write("</whileStatement>")
-
+        
     def compileDo(self):
 
         if(self.tokenizer.keyWord()!="do"):
@@ -753,6 +754,7 @@ class CompilationEngine:
 
         if(self.tokenizer.symbol()!=";"):
             self.compileExpression()
+            self.vmWriter.writeReturn()
 
         if(self.tokenizer.symbol()!=";"):
             print("Error: Expected symbol ;")
@@ -799,7 +801,8 @@ class CompilationEngine:
             self.tokenizer.advance()
         elif(self.tokenizer.keyWord() in ["true", "false", "null", "this"]):
             if(self.tokenizer.keyWord()=="true"):
-                self.vmWriter.writePush("constant",-1)
+                self.vmWriter.writePush("constant",1)
+                self.vmWriter.writeArithmetic("neg")
             elif(self.tokenizer.keyWord()=="false" or self.tokenizer.keyWord()=="null"):
                 self.vmWriter.writePush("constant",0)
             elif(self.tokenizer.keyWord()=="this"):
@@ -928,4 +931,4 @@ class JackCompiler:
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\seven")
+JackCompiler("Project11\TestFiles\ConvertToBin")
