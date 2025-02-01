@@ -320,6 +320,7 @@ class CompilationEngine:
         self.functionName = None
         self.nParams = 0
         self.nArgs = 0
+        self.subroutineCallName=""
 
     #Program Structure
     def compileClass(self):
@@ -357,9 +358,6 @@ class CompilationEngine:
             self.tokenizer.advance()
 
     def compileClassVarDec(self):
-        self.write("<classVarDec>")
-        self.indentation += 1
-
         currkind=None
         currType=None
 
@@ -368,7 +366,6 @@ class CompilationEngine:
             return
         else:
             currkind = self.tokenizer.keyWord()
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.keyWord() not in ["int", "char", "boolean"] and self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -376,7 +373,6 @@ class CompilationEngine:
             return
         else:
             currType = self.tokenizer.keyWord()
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -384,8 +380,6 @@ class CompilationEngine:
             return
         else:
             self.symbolTable.define(self.tokenizer.currentToken,currType,currkind)
-            currToken=self.tokenizer.currentToken
-            self.write(self.tokenizer.get_xml(f"{self.symbolTable.kindOf(currToken)} {self.symbolTable.typeOf(currToken)} {self.symbolTable.indexOf(currToken)}"))
             self.tokenizer.advance()
 
         while self.tokenizer.symbol()==",":
@@ -397,21 +391,17 @@ class CompilationEngine:
                 return
             else:
                 self.symbolTable.define(self.tokenizer.currentToken,currType,currkind)
-                currToken=self.tokenizer.currentToken
-                self.write(self.tokenizer.get_xml(f"{self.symbolTable.kindOf(currToken)} {self.symbolTable.typeOf(currToken)} {self.symbolTable.indexOf(currToken)}"))
                 self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!=";"):
             print("Error: Expected symbol ;")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
-        self.indentation -= 1
-        self.write("</classVarDec>")
-
     def compileSubroutine(self):
+
+        isVoid=False
 
         if(self.tokenizer.keyWord() not in ["constructor", "function", "method"]):
             print("Error: Expected keyword constructor, function or method")
@@ -429,6 +419,8 @@ class CompilationEngine:
             print("Error: Expected keyword void, int, char, boolean or class name")
             return
         else:
+            if(self.tokenizer.keyWord()=="void"):
+                isVoid=True
             self.tokenizer.advance()
 
         if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -453,9 +445,12 @@ class CompilationEngine:
         else:
             self.tokenizer.advance()
 
-        self.vmWriter.writeFunction(f"{self.className}.{self.functionName}",self.nParams)
-
         self.compileSubroutineBody()
+
+
+        if(isVoid):
+            self.vmWriter.writePush("constant",0)
+            self.vmWriter.writeReturn()
 
     def compileParameterList(self):
 
@@ -507,6 +502,8 @@ class CompilationEngine:
         while self.tokenizer.keyWord()=="var":
             self.compileVarDec()
 
+        self.vmWriter.writeFunction(f"{self.className}.{self.functionName}",self.symbolTable.varCount("var"))
+
         self.compileStatements()
 
         if(self.tokenizer.symbol()!="}"):
@@ -516,9 +513,6 @@ class CompilationEngine:
             self.tokenizer.advance()
 
     def compileVarDec(self):
-        self.write("<varDec>")
-        self.indentation += 1
-
         currKind=None
         currType=None
 
@@ -527,7 +521,6 @@ class CompilationEngine:
             return
         else:
             currKind = self.tokenizer.keyWord()
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.keyWord() not in ["int", "char", "boolean"] and self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -535,7 +528,6 @@ class CompilationEngine:
             return
         else:
             currType = self.tokenizer.keyWord()
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -543,12 +535,9 @@ class CompilationEngine:
             return
         else:
             self.symbolTable.define(self.tokenizer.currentToken,currType,currKind)
-            currToken=self.tokenizer.currentToken
-            self.write(self.tokenizer.get_xml(f"{self.symbolTable.kindOf(currToken)} {self.symbolTable.typeOf(currToken)} {self.symbolTable.indexOf(currToken)}"))
             self.tokenizer.advance()
 
         while self.tokenizer.symbol()==",":
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
             if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -556,19 +545,13 @@ class CompilationEngine:
                 return
             else:
                 self.symbolTable.define(self.tokenizer.currentToken,currType,currKind)
-                currToken=self.tokenizer.currentToken
-                self.write(self.tokenizer.get_xml(f"{self.symbolTable.kindOf(currToken)} {self.symbolTable.typeOf(currToken)} {self.symbolTable.indexOf(currToken)}"))
                 self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!=";"):
             print("Error: Expected symbol ;")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
-
-        self.indentation -= 1
-        self.write("</varDec>")
 
     #Statements
     def compileStatements(self):
@@ -586,26 +569,23 @@ class CompilationEngine:
                 self.compileReturn()
 
     def compileLet(self):
-        self.write("<letStatement>")
-        self.indentation += 1
+
+        letLHS=None
 
         if(self.tokenizer.keyWord()!="let"):
             print("Error: Expected keyword let")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         if(self.tokenizer.tokenType()!="IDENTIFIER"):
             print("Error: Expected variable name")
             return
         else:
-            currToken=self.tokenizer.currentToken
-            self.write(self.tokenizer.get_xml(f"{self.symbolTable.kindOf(currToken)} {self.symbolTable.typeOf(currToken)} {self.symbolTable.indexOf(currToken)}"))
+            letLHS = self.tokenizer.currentToken
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()=="["):
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
             self.compileExpression()
@@ -614,27 +594,25 @@ class CompilationEngine:
                 print("Error: Expected symbol ]")
                 return
             else:
-                self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!="="):
             print("Error: Expected symbol =")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
         self.compileExpression()
+
+        self.vmWriter.writePop(self.symbolTable.kindOf(letLHS),self.symbolTable.indexOf(letLHS))
 
         if(self.tokenizer.symbol()!=";"):
             print("Error: Expected symbol ;")
             return
         else:
-            self.write(self.tokenizer.get_xml())
             self.tokenizer.advance()
 
-        self.indentation -= 1
-        self.write("</letStatement>")
+        print(self.symbolTable.subroutineScope)
 
     def compileIf(self):
         self.write("<ifStatement>")
@@ -764,12 +742,13 @@ class CompilationEngine:
         else:
             self.tokenizer.advance()
 
+        self.vmWriter.writePop("temp",0)
+
     def compileReturn(self):
         if(self.tokenizer.keyWord()!="return"):
             print("Error: Expected keyword return")
             return
         else:
-            self.vmWriter.writeReturn()
             self.tokenizer.advance()
 
         if(self.tokenizer.symbol()!=";"):
@@ -812,15 +791,22 @@ class CompilationEngine:
             self.vmWriter.writeArithmetic(op)
 
     def compileTerm(self):
+
         if(self.tokenizer.tokenType()=="INT_CONST"):
             self.vmWriter.writePush("constant",self.tokenizer.intVal())
             self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="STRING_CONST"):
             self.tokenizer.advance()
         elif(self.tokenizer.keyWord() in ["true", "false", "null", "this"]):
+            if(self.tokenizer.keyWord()=="true"):
+                self.vmWriter.writePush("constant",-1)
+            elif(self.tokenizer.keyWord()=="false" or self.tokenizer.keyWord()=="null"):
+                self.vmWriter.writePush("constant",0)
+            elif(self.tokenizer.keyWord()=="this"):
+                self.vmWriter.writePush("pointer",0)
             self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="IDENTIFIER"):
-            self.vmWriter.writePush(self.symbolTable.kindOf(self.tokenizer.identifier()),self.symbolTable.indexOf(self.tokenizer.identifier()))
+            tempName=self.tokenizer.identifier()
             self.tokenizer.advance()
 
             if(self.tokenizer.symbol()=="["):
@@ -836,7 +822,12 @@ class CompilationEngine:
                     self.tokenizer.advance()
 
             elif(self.tokenizer.symbol()=="(" or self.tokenizer.symbol()=="."):
+                self.subroutineCallName+=tempName
                 self.compileSubroutineCall()
+            else:
+                self.vmWriter.writePush(self.symbolTable.kindOf(tempName),self.symbolTable.indexOf(tempName))
+
+
         elif(self.tokenizer.symbol()=="("):
             self.tokenizer.advance()
             self.compileExpression()
@@ -847,14 +838,22 @@ class CompilationEngine:
             else:
                 self.tokenizer.advance()
         elif(self.tokenizer.symbol() in ["-", "~"]):
+            op=self.tokenizer.symbol()
             self.tokenizer.advance()
             self.compileTerm()
+            if(op=="-"):
+                self.vmWriter.writeArithmetic("neg")
+            elif(op=="~"):
+                self.vmWriter.writeArithmetic("not")
 
     def compileSubroutineCall(self):
 
         callName=""
 
         if(self.tokenizer.symbol()=="."):
+            callName+=self.subroutineCallName
+            self.subroutineCallName=""
+            callName+="."
             self.tokenizer.advance()
 
             if(self.tokenizer.tokenType()!="IDENTIFIER"):
@@ -929,4 +928,4 @@ class JackCompiler:
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\Seven")
+JackCompiler("Project11\TestFiles\ConvertToBin")
