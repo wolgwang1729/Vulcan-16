@@ -592,6 +592,7 @@ class CompilationEngine:
     def compileLet(self):
 
         letLHS=None
+        fArr=False
 
         if(self.tokenizer.keyWord()!="let"):
             print("Error: Expected keyword let")
@@ -608,8 +609,12 @@ class CompilationEngine:
 
         if(self.tokenizer.symbol()=="["):
             self.tokenizer.advance()
-
             self.compileExpression()
+
+            if(self.symbolTable.typeOf(letLHS)=="Array"):
+                self.vmWriter.writePush(self.symbolTable.kindOf(letLHS),self.symbolTable.indexOf(letLHS))
+                self.vmWriter.writeArithmetic("add")
+                fArr=True
 
             if(self.tokenizer.symbol()!="]"):
                 print("Error: Expected symbol ]")
@@ -625,7 +630,13 @@ class CompilationEngine:
 
         self.compileExpression()
 
-        self.vmWriter.writePop(self.symbolTable.kindOf(letLHS),self.symbolTable.indexOf(letLHS))
+        if(fArr):
+            self.vmWriter.writePop("temp",0)
+            self.vmWriter.writePop("pointer",1)
+            self.vmWriter.writePush("temp",0)
+            self.vmWriter.writePop("that",0)
+        else:
+            self.vmWriter.writePop(self.symbolTable.kindOf(letLHS),self.symbolTable.indexOf(letLHS))
 
         if(self.tokenizer.symbol()!=";"):
             print("Error: Expected symbol ;")
@@ -814,6 +825,13 @@ class CompilationEngine:
             self.vmWriter.writePush("constant",self.tokenizer.intVal())
             self.tokenizer.advance()
         elif(self.tokenizer.tokenType()=="STRING_CONST"):
+            str=self.tokenizer.stringVal()
+            length=len(str)
+            self.vmWriter.writePush("constant",length)
+            self.vmWriter.writeCall("String.new",1)
+            for i in range(length):
+                self.vmWriter.writePush("constant",ord(str[i]))
+                self.vmWriter.writeCall("String.appendChar",2)
             self.tokenizer.advance()
         elif(self.tokenizer.keyWord() in ["true", "false", "null", "this"]):
             if(self.tokenizer.keyWord()=="true"):
@@ -829,15 +847,17 @@ class CompilationEngine:
             self.tokenizer.advance()
 
             if(self.tokenizer.symbol()=="["):
-                self.write(self.tokenizer.get_xml())
                 self.tokenizer.advance()
                 self.compileExpression()
-
+                if(self.symbolTable.typeOf(tempName)=="Array"):
+                    self.vmWriter.writePush(self.symbolTable.kindOf(tempName),self.symbolTable.indexOf(tempName))
+                    self.vmWriter.writeArithmetic("add")
+                    self.vmWriter.writePop("pointer",1)
+                    self.vmWriter.writePush("that",0)
                 if(self.tokenizer.symbol()!="]"):
                     print("Error: Expected symbol ]")
                     return
                 else:
-                    self.write(self.tokenizer.get_xml())
                     self.tokenizer.advance()
 
             elif(self.tokenizer.symbol()=="(" or self.tokenizer.symbol()=="."):
@@ -963,4 +983,4 @@ class JackCompiler:
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\Square")
+JackCompiler("Project11\TestFiles\Average")
