@@ -650,9 +650,9 @@ class CompilationEngine:
         self.labelCount+=2
 
 
-        self.vmWriter.writeIf(f"{self.className}_{tempLabelCount1}")
+        self.vmWriter.writeIf(f"{self.className}_{tempLabelCount2}")
         self.compileStatements()
-        self.vmWriter.writeGoto(f"{self.className}_{tempLabelCount2}")
+        self.vmWriter.writeGoto(f"{self.className}_{tempLabelCount1}")
 
         if(self.tokenizer.symbol()!="}"):
             print("Error: Expected symbol }")
@@ -669,7 +669,7 @@ class CompilationEngine:
             else:
                 self.tokenizer.advance()
 
-            self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount1}")
+            self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount2}")
             self.compileStatements()
 
             if(self.tokenizer.symbol()!="}"):
@@ -678,7 +678,7 @@ class CompilationEngine:
             else:
                 self.tokenizer.advance()
 
-        self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount2}")
+        self.vmWriter.writeLabel(f"{self.className}_{tempLabelCount1}")
 
     def compileWhile(self):
 
@@ -925,10 +925,11 @@ class JackCompiler:
             print(file)
             tokenizer = JackTokenizerFile(self.directoryPath + "/" + file)
             output_file = open(self.directoryPath + "/" + file[:-5] + ".vm", "w")
+            output_file.write(f"// Compiled {file}:\n")
             vmWriter = VMWriter(output_file)
             symbolTable=SymbolTable()
             compilationEngine = CompilationEngine(tokenizer,vmWriter,symbolTable)
             compilationEngine.compileClass()
             output_file.close()
 
-JackCompiler("Project11\TestFiles\ConvertToBin")
+JackCompiler("Project11\TestFiles\Seven")
