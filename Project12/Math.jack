@@ -10,19 +10,21 @@
  *  using calls to OS functions in this class.
  */
 class Math {
-    static int n;             // Number of bits used for representing a two's complement integer
-    static Array powersOfTwo; // Stores 2^0, 2^1, 2^2,..., 2^(n-1)
+    static int n;        
+    static Array powersOfTwo; 
 
     // Initializes the Math library.
     function void init() {
+        var int i;
         let n = 16;
         let powersOfTwo = Array.new(n);
         let powersOfTwo[0] = 1;
         let i = 1;
         while (i < n) {
-            let powersOfTwo[i] = Math.multiply(powersOfTwo[i-1], 2);
+            let powersOfTwo[i] = powersOfTwo[i-1]+powersOfTwo[i-1];
             let i = i + 1;
         }
+        return;
     }
 
     /** Returns the product of x and y. 
@@ -30,15 +32,16 @@ class Math {
      *  in an expression, it handles it by invoking this method. 
      *  Thus, in Jack, x * y and Math.multiply(x,y) return the same value. */
     function int multiply(int x, int y) {
-        var int sum, shiftedX,i;
+        var int sum, shiftedX, i;
+        
         let sum = 0;
         let shiftedX = x;
         let i = 0;
-        while(i < n) {
-            if ((y, powersOfTwo[i]) != 0) {
-                let sum=sum+shiftedX;
+        while( i < n ) {  
+            if(~((y & powersOfTwo[i]) = 0)) {
+                let sum = sum + shiftedX;
             }
-            let shiftedX = Math.multiply(shiftedX, 2); 
+            let shiftedX = shiftedX + shiftedX;
             let i = i + 1;
         }
         return sum;
@@ -49,53 +52,52 @@ class Math {
      *  an an expression, it handles it by invoking this method.
      *  Thus, x/y and Math.divide(x,y) return the same value. */
     function int divide(int x, int y) {
-        var int q, i,fneg;
-        let fneg=false;
-        if(x<0){
-            let x=-x;
-            let fneg=~neg;
-        }
-        if(y<0){
-            let y=-y;
-            let fneg=~neg;
-        }
-        let q = Math.divide(x, y*2);
+        var int q,product;
+        var boolean fneg;
         if (y = 0) {
             do Output.printString("Error: Division by zero\n");
             return 0;
         }
-        if(y>x | y<0){
+        let fneg = false;
+        if (x < 0) {
+            let x = -x;
+            let fneg = ~fneg;
+        }
+        if (y < 0) {
+            let y = -y;
+            let fneg = ~fneg;
+        }
+        if(y>x){
             return 0;
         }
 
-        if((x-2*q*y)<y){
-            if(fneg){
-                return -2*q;
-            }
-            else{
-                return 2*q;
-            }
+        let q=Math.divide(x,2*y);
+
+        if((x-(2*q*y))<y){
+            let product=2*q;
         }
         else{
-            if(fneg){
-                return -2*q+1;
-            }
-            else{
-                return 2*q+1;
-            }
+            let product=2*q+1;
         }
-        
+        if(fneg){
+            return -product;
+        }
+        else{
+            return product;
+        }
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-        var int y,j;
+        var int y,j,currpow;
         let y=0;
-        let j=n/2-1;
-        while(j>=0){
-            if(((y+powersOfTwo[j])*(y+powersOfTwo[j])<=x) & ((y+powersOfTwo[j])*(y+powersOfTwo[j]))>0){
-                let y=y+powersOfTwo[j];
+        let j=(n/2)-1;
+        while(j>-1){
+            let currpow=powersOfTwo[j];
+            if((((y+currpow)*(y+currpow)<x)|((y+currpow)*(y+currpow)=x))&(((y+currpow)*(y+currpow))>0)){
+                let y=y+currpow;
             }
+            let j=j-1;
         }
         return y;
     }
