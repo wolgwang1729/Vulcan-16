@@ -9,34 +9,125 @@
  * the screen is indexed (0,0).
  */
 class Screen {
+    static boolean color;
+    static Array powersOfTwo; 
 
     /** Initializes the Screen. */
     function void init() {
+        var int i,n;
+        let color = true;
+        let n = 16;
+        let powersOfTwo = Array.new(n);
+        let powersOfTwo[0] = 1;
+        let i = 1;
+        while (i < n) {
+            let powersOfTwo[i] = powersOfTwo[i-1]+powersOfTwo[i-1];
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Erases the entire screen. */
     function void clearScreen() {
+        var int i;
+        let i=16384;
+        while(i<24576) {
+            do Memory.poke(i,0);
+            let i=i+1;
+        }
+        return;
     }
 
     /** Sets the current color, to be used for all subsequent drawXXX commands.
      *  Black is represented by true, white by false. */
     function void setColor(boolean b) {
+        let color = b;
+        return;
     }
 
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
+        var int address,value;
+        let address = 32*y+x;
+        let value = Memory.peek(16384+address);
+        if(color) {
+            let value = ((value)|(powersOfTwo[Screen.mod(x,16)]));
+        }
+        else {
+            let value = ((value)&(~powersOfTwo[Screen.mod(x,16)]));
+        }
+        return;
     }
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
+        var int x,y,dx,dy,a,b,diff;
+        // Horizontal
+        if(y1=y2) {
+            let x=x1;
+            while(~(x>x2)) {
+                do Screen.drawPixel(x,y1);
+                let x=x+1;
+            }
+            return;
+        }
+        // Vertical
+        if(x1=x2){
+            let y=y1;
+            while(~(y>y2)) {
+                do Screen.drawPixel(x1,y);
+                let y=y+1;
+            }
+            return;
+        }
+        // North East
+        let dx = x2-x1;
+        let dy = y2-y1;
+        let x=x1;
+        let y=y1;
+        let diff=0;
+
+        while((~(a>dx))&(~(b>dy))) {
+            do Screen.drawPixel(x+a,y+b);
+            if(diff<0){
+                let a=a+1;
+                let diff=diff+dy;
+            }
+            else {
+                let b=b+1;
+                let diff=diff-dx;
+            }
+        }
+        return;
+
     }
 
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      *  and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        do Screen.drawLine(x1,y1,x2,y1);
+        do Screen.drawLine(x1,y1,x1,y2);
+        do Screen.drawLine(x2,y1,x2,y2);
+        do Screen.drawLine(x1,y2,x2,y2);
+        return;
     }
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
+        var int dy,dx;
+        let r=Math.min(r,181);
+        let dy=-r;
+        while(~(dy>r)){
+            let dx=Math.sqrt((r*r)-(dy*dy));
+            do Screen.drawLine(x-dx,y+dy,x+dx,y+dy);
+        }
+        return;
+    }
+
+    function int mod(int a, int b) {
+        while(~(a<b)) {
+            let a=a-b;
+        }
+        return a;
     }
 }
