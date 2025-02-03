@@ -33,7 +33,7 @@ class Main {
         do Output.printString(s);
         do Output.println();
         
-        do Output.printInt(-12345);
+        do Output.printInt(-12349);
         do Output.backSpace();
         do Output.printInt(6789);
         

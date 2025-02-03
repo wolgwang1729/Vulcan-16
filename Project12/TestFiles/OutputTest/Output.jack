@@ -17,9 +17,27 @@ class Output {
 
     // Character map for displaying characters
     static Array charMaps; 
+    static Array screen;
+    static Array powersOfTwo; 
+    static int xcursor;
+    static int ycursor;
 
     /** Initializes the screen, and locates the cursor at the screen's top-left. */
     function void init() {
+        var int i,n;
+        let screen = 16384;
+        let xcursor = 0;
+        let ycursor = 0;
+        let n=8;
+        let powersOfTwo = Array.new(n);
+        let powersOfTwo[0] = 1;
+        let i=1;
+        while (i < n) {
+            let powersOfTwo[i] = powersOfTwo[i-1]+powersOfTwo[i-1];
+            let i = i + 1;
+        }
+        do Output.initMap();
+        return;
     }
 
     // Initializes the character map array
@@ -70,7 +88,7 @@ class Output {
         do Output.create(64,30,51,51,59,59,59,27,3,30,0,0);  // @
         do Output.create(63,30,51,51,24,12,12,0,12,12,0,0);  // ?
 
-        do Output.create(65,0,0,0,0,0,0,0,0,0,0,0);          // A ** TO BE FILLED **
+        do Output.create(65,12,30,51,51,63,51,51,51,51,0,0);          // A ** TO BE FILLED **
         do Output.create(66,31,51,51,51,31,51,51,51,31,0,0); // B
         do Output.create(67,28,54,35,3,3,3,35,54,28,0,0);    // C
         do Output.create(68,15,27,51,51,51,51,51,27,15,0,0); // D
@@ -136,15 +154,15 @@ class Output {
         do Output.create(125,7,12,12,12,56,12,12,12,7,0,0);    // }
         do Output.create(126,38,45,25,0,0,0,0,0,0,0,0);        // ~
 
-	return;
+	    return;
     }
 
     // Creates the character map array of the given character index, using the given values.
     function void create(int index, int a, int b, int c, int d, int e,
                          int f, int g, int h, int i, int j, int k) {
-	var Array map;
+        var Array map;
 
-	let map = Array.new(11);
+        let map = Array.new(11);
         let charMaps[index] = map;
 
         let map[0] = a;
@@ -175,28 +193,99 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
+        let xcursor = j;
+        let ycursor = i;
+        do Output.printChar(32);
+        let xcursor = j;
+        let ycursor = i;
+        return;
     }
 
     /** Displays the given character at the cursor location,
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
+        var Array map;
+        var int i;
+        var int x,y,xt;
+        var int currmapchar,xt;
+        let map = Output.getMap(c);
+        let x = xcursor*8;
+        let y = ycursor*11;
+        let i = 0;
+        while(i < 11) {
+            let currmapchar = map[i];
+            let xt=0;
+            while(xt < 8) {
+                if((currmapchar & powersOfTwo[7-xt]) > 0) {
+                    do Screen.setColor(true);
+                    do Screen.drawPixel(x+(7-xt),y+i);
+                }
+                else{
+                    do Screen.setColor(false);
+                    do Screen.drawPixel(x+(7-xt),y+i);
+                }
+                let xt = xt + 1;
+            }
+            let i = i + 1;
+        }
+        let xcursor = xcursor + 1;
+        if(xcursor = 64) {
+            let xcursor = 0;
+            let ycursor = ycursor + 1;
+        }
+        if(ycursor = 23) {
+            let ycursor = 0;
+        }
+        return;
     }
 
     /** displays the given string starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printString(String s) {
+        var int i,len;
+        let i = 0;
+        let len = s.length();
+        while(i < len) {
+            do Output.printChar(s.charAt(i));
+            let i = i + 1;
+        }
+        return;
     }
 
-    /** Displays the given integer starting at the cursor location,
-     *  and advances the cursor appropriately. */
+    // /** Displays the given integer starting at the cursor location,
+    //  *  and advances the cursor appropriately. */
     function void printInt(int i) {
+        var String s;
+        let s = String.new(8);
+        do s.setInt(i);
+        do Output.printString(s);
+        return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        let xcursor = 0;
+        let ycursor = ycursor + 1;
+        if(ycursor = 23) {
+            let ycursor = 0;
+        }
+        return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        if(xcursor > 0) {
+            do Output.moveCursor(ycursor,xcursor-1);
+            return;
+        }
+        if(xcursor = 0) {
+            if(ycursor > 0) {
+                do Output.moveCursor(ycursor-1,63);
+            }
+            else{
+                do Output.moveCursor(22,63);
+            }
+        }
+        return;
     }
 }
