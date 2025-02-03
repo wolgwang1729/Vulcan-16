@@ -47,15 +47,18 @@ class Screen {
 
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
-        var int address,value;
-        let address = 32*y+x;
+        var int address,value,modVal;
+        
+        let address = (32*y)+(x/16);
         let value = Memory.peek(16384+address);
+        let modVal = Screen.mod(x,16);
         if(color) {
-            let value = ((value)|(powersOfTwo[Screen.mod(x,16)]));
+            let value = ((value)|(powersOfTwo[modVal]));
         }
         else {
-            let value = ((value)&(~powersOfTwo[Screen.mod(x,16)]));
+            let value = ((value)&(~(powersOfTwo[modVal])));
         }
+        do Memory.poke(16384+address,value);
         return;
     }
 
@@ -105,10 +108,12 @@ class Screen {
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      *  and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
-        do Screen.drawLine(x1,y1,x2,y1);
-        do Screen.drawLine(x1,y1,x1,y2);
-        do Screen.drawLine(x2,y1,x2,y2);
-        do Screen.drawLine(x1,y2,x2,y2);
+        var int x,y;
+        let y=y1;
+        while(~(y>y2)){
+            do Screen.drawLine(x1,y,x2,y);
+            let y=y+1;
+        }
         return;
     }
 
@@ -117,9 +122,11 @@ class Screen {
         var int dy,dx;
         let r=Math.min(r,181);
         let dy=-r;
+
         while(~(dy>r)){
             let dx=Math.sqrt((r*r)-(dy*dy));
             do Screen.drawLine(x-dx,y+dy,x+dx,y+dy);
+            let dy=dy+1;
         }
         return;
     }
