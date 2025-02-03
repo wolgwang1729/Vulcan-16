@@ -34,6 +34,7 @@ The goal is also to implement the things I learned in University's third semeste
 - [`Project9/`](Project9/): Contains the GuessANumber game implemented in Jack language.
 - [`Project10/`](Project10/): Contains the JackAnalyzer which parses Jack programs and outputs XML files.
 - [`Project11/`](Project11/): Contains the JackCompiler which compiles Jack programs into VM code.
+- [`Project12/`](Project12/): Contains the implementation of the Jack OS, including various system classes like `Sys`, `Output`, `Screen`, `Keyboard`, `String`,`Array`and `Memory`.
 
 ## Explanation of Each Project's Purpose
 - **Project1**: Building basic gates like And, Or, Not, Xor, Mux, Dmux.
@@ -47,6 +48,7 @@ The goal is also to implement the things I learned in University's third semeste
 - **Project9**: Developing a GuessANumber game in jack language.
 - **Project10**: Developing the JackAnalyzer which parses Jack programs and outputs XML files.
 - **Project11**: Developing the JackCompiler which compiles Jack programs into VM code.
+- **Project12**: Implementing the Jack operating system (OS), which includes writing various system classes such as `Sys`, `Output`, `Screen`, `Keyboard`, `String`, `Array`, and `Memory`. These classes provide essential services and abstractions for Jack programs, enabling higher-level programming and interaction with the hardware.
 
 # Hardware Components
 ## List and Description of All Hardware Components
