@@ -28,114 +28,15 @@ class Sys {
 
     /** Waits approximately duration milliseconds and returns.  */
     // Assuming the programs run in fast execution mode
-    // I have tried setting the number of operations to be executed in the wait function to duration*(32767)^26 
+    // I have tried setting the number of operations to be executed in the wait function to duration*(32767)^26 and it was not even close to 2 seconds
+    // So falling back to the number of operations to be durations*32767
         function void wait(int duration) {
-        var int in, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z;
-        let in = 0;
+        var int i,j;
+        let i = 0;
         while (i < (duration)) {
-            let a = 0;
-            while (a < delayFactor) {
-                let b = 0;
-                while (b < delayFactor) {
-                    let c = 0;
-                    while (c < delayFactor) {
-                        let d = 0;
-                        while (d < delayFactor) {
-                            let e = 0;
-                            while (e < delayFactor) {
-                                let f = 0;
-                                while (f < delayFactor) {
-                                    let g = 0;
-                                    while (g < delayFactor) {
-                                        let h = 0;
-                                        while (h < delayFactor) {
-                                            let i = 0;
-                                            while (i < delayFactor) {
-                                                let j = 0;
-                                                while (j < delayFactor) {
-                                                    let k = 0;
-                                                    while (k < delayFactor) {
-                                                        let l = 0;
-                                                        while (l < delayFactor) {
-                                                            let m = 0;
-                                                            while (m < delayFactor) {
-                                                                let n = 0;
-                                                                while (n < delayFactor) {
-                                                                    let o = 0;
-                                                                    while (o < delayFactor) {
-                                                                        let p = 0;
-                                                                        while (p < delayFactor) {
-                                                                            let q = 0;
-                                                                            while (q < delayFactor) {
-                                                                                let r = 0;
-                                                                                while (r < delayFactor) {
-                                                                                    let s = 0;
-                                                                                    while (s < delayFactor) {
-                                                                                        let t = 0;
-                                                                                        while (t < delayFactor) {
-                                                                                            let u = 0;
-                                                                                            while (u < delayFactor) {
-                                                                                                let v = 0;
-                                                                                                while (v < delayFactor) {
-                                                                                                    let w = 0;
-                                                                                                    while (w < delayFactor) {
-                                                                                                        let x = 0;
-                                                                                                        while (x < delayFactor) {
-                                                                                                            let y = 0;
-                                                                                                            while (y < delayFactor) {
-                                                                                                                let z = 0;
-                                                                                                                while (z < delayFactor) {
-                                                                                                                    let z = z + 1;
-                                                                                                                }
-                                                                                                                let y = y + 1;
-                                                                                                            }
-                                                                                                            let x = x + 1;
-                                                                                                        }
-                                                                                                        let w = w + 1;
-                                                                                                    }
-                                                                                                    let v = v + 1;
-                                                                                                }
-                                                                                                let u = u + 1;
-                                                                                            }
-                                                                                            let t = t + 1;
-                                                                                        }
-                                                                                        let s = s + 1;
-                                                                                    }
-                                                                                    let r = r + 1;
-                                                                                }
-                                                                                let q = q + 1;
-                                                                            }
-                                                                            let p = p + 1;
-                                                                        }
-                                                                        let o = o + 1;
-                                                                    }
-                                                                    let n = n + 1;
-                                                                }
-                                                                let m = m + 1;
-                                                            }
-                                                            let l = l + 1;
-                                                        }
-                                                        let k = k + 1;
-                                                    }
-                                                    let j = j + 1;
-                                                }
-                                                let i = i + 1;
-                                            }
-                                            let h = h + 1;
-                                        }
-                                        let g = g + 1;
-                                    }
-                                    let f = f + 1;
-                                }
-                                let e = e + 1;
-                            }
-                            let d = d + 1;
-                        }
-                        let c = c + 1;
-                    }
-                    let b = b + 1;
-                }
-                let a = a + 1;
+            let j = 0;
+            while (j < delayFactor) {
+                let j = j + 1;
             }
             let i = i + 1;
         }
