@@ -1,0 +1,426 @@
+function Sys.init 0
+    call Math.init 0
+    pop temp 0
+    call Memory.init 0
+    pop temp 0
+    call Screen.init 0
+    pop temp 0
+    call Keyboard.init 0
+    pop temp 0
+    call Output.init 0
+    pop temp 0
+    call Main.main 0
+    pop temp 0
+    push constant 32767
+    pop static 0
+    push constant 0
+    return
+function Sys.halt 0
+label Sys_0
+    push constant 1
+    neg
+    not
+    if-goto Sys_1
+    goto Sys_0
+label Sys_1
+    push constant 0
+    return
+function Sys.wait 27
+    push constant 0
+    pop local 0
+label Sys_2
+    push local 9
+    push argument 0
+    lt
+    not
+    if-goto Sys_3
+    push constant 0
+    pop local 1
+label Sys_4
+    push local 1
+    push static 0
+    lt
+    not
+    if-goto Sys_5
+    push constant 0
+    pop local 2
+label Sys_6
+    push local 2
+    push static 0
+    lt
+    not
+    if-goto Sys_7
+    push constant 0
+    pop local 3
+label Sys_8
+    push local 3
+    push static 0
+    lt
+    not
+    if-goto Sys_9
+    push constant 0
+    pop local 4
+label Sys_10
+    push local 4
+    push static 0
+    lt
+    not
+    if-goto Sys_11
+    push constant 0
+    pop local 5
+label Sys_12
+    push local 5
+    push static 0
+    lt
+    not
+    if-goto Sys_13
+    push constant 0
+    pop local 6
+label Sys_14
+    push local 6
+    push static 0
+    lt
+    not
+    if-goto Sys_15
+    push constant 0
+    pop local 7
+label Sys_16
+    push local 7
+    push static 0
+    lt
+    not
+    if-goto Sys_17
+    push constant 0
+    pop local 8
+label Sys_18
+    push local 8
+    push static 0
+    lt
+    not
+    if-goto Sys_19
+    push constant 0
+    pop local 9
+label Sys_20
+    push local 9
+    push static 0
+    lt
+    not
+    if-goto Sys_21
+    push constant 0
+    pop local 10
+label Sys_22
+    push local 10
+    push static 0
+    lt
+    not
+    if-goto Sys_23
+    push constant 0
+    pop local 11
+label Sys_24
+    push local 11
+    push static 0
+    lt
+    not
+    if-goto Sys_25
+    push constant 0
+    pop local 12
+label Sys_26
+    push local 12
+    push static 0
+    lt
+    not
+    if-goto Sys_27
+    push constant 0
+    pop local 13
+label Sys_28
+    push local 13
+    push static 0
+    lt
+    not
+    if-goto Sys_29
+    push constant 0
+    pop local 14
+label Sys_30
+    push local 14
+    push static 0
+    lt
+    not
+    if-goto Sys_31
+    push constant 0
+    pop local 15
+label Sys_32
+    push local 15
+    push static 0
+    lt
+    not
+    if-goto Sys_33
+    push constant 0
+    pop local 16
+label Sys_34
+    push local 16
+    push static 0
+    lt
+    not
+    if-goto Sys_35
+    push constant 0
+    pop local 17
+label Sys_36
+    push local 17
+    push static 0
+    lt
+    not
+    if-goto Sys_37
+    push constant 0
+    pop local 18
+label Sys_38
+    push local 18
+    push static 0
+    lt
+    not
+    if-goto Sys_39
+    push constant 0
+    pop local 19
+label Sys_40
+    push local 19
+    push static 0
+    lt
+    not
+    if-goto Sys_41
+    push constant 0
+    pop local 20
+label Sys_42
+    push local 20
+    push static 0
+    lt
+    not
+    if-goto Sys_43
+    push constant 0
+    pop local 21
+label Sys_44
+    push local 21
+    push static 0
+    lt
+    not
+    if-goto Sys_45
+    push constant 0
+    pop local 22
+label Sys_46
+    push local 22
+    push static 0
+    lt
+    not
+    if-goto Sys_47
+    push constant 0
+    pop local 23
+label Sys_48
+    push local 23
+    push static 0
+    lt
+    not
+    if-goto Sys_49
+    push constant 0
+    pop local 24
+label Sys_50
+    push local 24
+    push static 0
+    lt
+    not
+    if-goto Sys_51
+    push constant 0
+    pop local 25
+label Sys_52
+    push local 25
+    push static 0
+    lt
+    not
+    if-goto Sys_53
+    push constant 0
+    pop local 26
+label Sys_54
+    push local 26
+    push static 0
+    lt
+    not
+    if-goto Sys_55
+    push local 26
+    push constant 1
+    add
+    pop local 26
+    goto Sys_54
+label Sys_55
+    push local 25
+    push constant 1
+    add
+    pop local 25
+    goto Sys_52
+label Sys_53
+    push local 24
+    push constant 1
+    add
+    pop local 24
+    goto Sys_50
+label Sys_51
+    push local 23
+    push constant 1
+    add
+    pop local 23
+    goto Sys_48
+label Sys_49
+    push local 22
+    push constant 1
+    add
+    pop local 22
+    goto Sys_46
+label Sys_47
+    push local 21
+    push constant 1
+    add
+    pop local 21
+    goto Sys_44
+label Sys_45
+    push local 20
+    push constant 1
+    add
+    pop local 20
+    goto Sys_42
+label Sys_43
+    push local 19
+    push constant 1
+    add
+    pop local 19
+    goto Sys_40
+label Sys_41
+    push local 18
+    push constant 1
+    add
+    pop local 18
+    goto Sys_38
+label Sys_39
+    push local 17
+    push constant 1
+    add
+    pop local 17
+    goto Sys_36
+label Sys_37
+    push local 16
+    push constant 1
+    add
+    pop local 16
+    goto Sys_34
+label Sys_35
+    push local 15
+    push constant 1
+    add
+    pop local 15
+    goto Sys_32
+label Sys_33
+    push local 14
+    push constant 1
+    add
+    pop local 14
+    goto Sys_30
+label Sys_31
+    push local 13
+    push constant 1
+    add
+    pop local 13
+    goto Sys_28
+label Sys_29
+    push local 12
+    push constant 1
+    add
+    pop local 12
+    goto Sys_26
+label Sys_27
+    push local 11
+    push constant 1
+    add
+    pop local 11
+    goto Sys_24
+label Sys_25
+    push local 10
+    push constant 1
+    add
+    pop local 10
+    goto Sys_22
+label Sys_23
+    push local 9
+    push constant 1
+    add
+    pop local 9
+    goto Sys_20
+label Sys_21
+    push local 8
+    push constant 1
+    add
+    pop local 8
+    goto Sys_18
+label Sys_19
+    push local 7
+    push constant 1
+    add
+    pop local 7
+    goto Sys_16
+label Sys_17
+    push local 6
+    push constant 1
+    add
+    pop local 6
+    goto Sys_14
+label Sys_15
+    push local 5
+    push constant 1
+    add
+    pop local 5
+    goto Sys_12
+label Sys_13
+    push local 4
+    push constant 1
+    add
+    pop local 4
+    goto Sys_10
+label Sys_11
+    push local 3
+    push constant 1
+    add
+    pop local 3
+    goto Sys_8
+label Sys_9
+    push local 2
+    push constant 1
+    add
+    pop local 2
+    goto Sys_6
+label Sys_7
+    push local 1
+    push constant 1
+    add
+    pop local 1
+    goto Sys_4
+label Sys_5
+    push local 9
+    push constant 1
+    add
+    pop local 9
+    goto Sys_2
+label Sys_3
+    push constant 0
+    return
+function Sys.error 0
+    push constant 3
+    call String.new 1
+    push constant 69
+    call String.appendChar 2
+    push constant 82
+    call String.appendChar 2
+    push constant 82
+    call String.appendChar 2
+    call Output.printString 1
+    pop temp 0
+    push argument 0
+    call Output.printInt 1
+    pop temp 0
+    call Sys.halt 0
+    pop temp 0
+    push constant 0
+    return
