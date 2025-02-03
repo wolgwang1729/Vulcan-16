@@ -51,7 +51,7 @@ class Screen {
         
         let address = (32*y)+(x/16);
         let value = Memory.peek(16384+address);
-        let modVal = Screen.mod(x,16);
+        let modVal = (x-((x/16)*16));
         if(color) {
             let value = ((value)|(powersOfTwo[modVal]));
         }
@@ -64,9 +64,14 @@ class Screen {
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
-        var int x,y,dx,dy,a,b,diff;
+        var int x,y,dx,dy,a,b,diff,signdx,signdy,temp;
         // Horizontal
         if(y1=y2) {
+            if(x1>x2) {
+                let temp=x1;
+                let x1=x2;
+                let x2=temp;
+            }
             let x=x1;
             while(~(x>x2)) {
                 do Screen.drawPixel(x,y1);
@@ -76,6 +81,11 @@ class Screen {
         }
         // Vertical
         if(x1=x2){
+            if(y1>y2) {
+                let temp=y1;
+                let y1=y2;
+                let y2=temp;
+            }
             let y=y1;
             while(~(y>y2)) {
                 do Screen.drawPixel(x1,y);
@@ -83,15 +93,31 @@ class Screen {
             }
             return;
         }
-        // North East
+        
+        // Generalised line
         let dx = x2-x1;
         let dy = y2-y1;
+        if(dx<0){
+            let dx=-dx;
+            let signdx=-1;
+        }
+        else {
+            let signdx=1;
+        }
+        if(dy<0){
+            let dy=-dy;
+            let signdy=-1;
+        }
+        else {
+            let signdy=1;
+        }
         let x=x1;
         let y=y1;
+        let a=0;
+        let b=0;
         let diff=0;
-
         while((~(a>dx))&(~(b>dy))) {
-            do Screen.drawPixel(x+a,y+b);
+            do Screen.drawPixel(x+(signdx*a),y+(signdy*b));
             if(diff<0){
                 let a=a+1;
                 let diff=diff+dy;
@@ -102,11 +128,10 @@ class Screen {
             }
         }
         return;
-
     }
 
-    /** Draws a filled rectangle whose top left corner is (x1, y1)
-     *  and bottom right corner is (x2,y2), using the current color. */
+    /** Draws a filled rectangle whose bottom left corner is (x1, y1)
+     *  and top right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
         var int x,y;
         let y=y1;
@@ -129,12 +154,5 @@ class Screen {
             let dy=dy+1;
         }
         return;
-    }
-
-    function int mod(int a, int b) {
-        while(~(a<b)) {
-            let a=a-b;
-        }
-        return a;
     }
 }
