@@ -45,3 +45,6 @@ This folder contains the software tools used to program Vulcan-16. These tools i
   - `JackCompiler.py`: Compiles Jack code with identifier support.
   - `JackTokenizerIdentifier.py`: Tokenizes Jack code with advanced features.
 - **Outcome**: Enables more sophisticated programming in Jack.
+
+### Note:
+While Vulcan-16 aims to be a self-contained computer system, the software tools (VM translator, compiler) are written in Python, this might seem counter inuitive as we are building the Vulcan-16 from scratch. This is a deliberate choice, mirroring the historical development of compilers.  Just as early compilers were often hand-written or built using simpler languages, Python serves as our initial tool to create the software infrastructure for Vulcan-16.  This allows for more efficient development and testing.  Ultimately, these tools could theoretically be rewritten in Jack and run on Vulcan-16 itself.
