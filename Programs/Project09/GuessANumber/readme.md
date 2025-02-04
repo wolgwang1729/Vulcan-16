@@ -1,7 +1,7 @@
 # Guess A Number Game
 
 ## Introduction
-This project is a simple "Guess A Number" game written in Jack language. The game was developed as part of the Nand2Tetris course, which involves building a computer from scratch and writing software to run on it. The game uses a pseudo-random number generator to select a number for the player to guess.
+This project is a simple "Guess A Number" game written in Jack language. The game uses a pseudo-random number generator to select a number for the player to guess.
 
 ## Game Description
 In this game, the computer randomly selects a number within a specified range (0 to 10). The player then tries to guess the number. After each guess, the game provides feedback indicating whether the guess was correct or incorrect and ends.
