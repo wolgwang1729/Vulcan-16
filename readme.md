@@ -19,7 +19,7 @@ In short, Vulcan-16 is my way of answering the question: "Can I take what I’ve
 - The 16-bit computer, I built, is based on Harvard Architecture (which is a variant of Von Neumann Architecture). 
 
 ## **Architecture of Computer:**
-![Hack Computer Architecture](https://i.sstatic.net/cwLb8LVg.png)
+![Hack Computer Architecture](https://i.sstatic.net/guKsKZIz.png)
 - The computer consists of:
   - `32K x 16` ROM, in which any program can be loaded.
   - `24577 x 16` memory, composed of `16K x 16` RAM, `8K x 16` for the screen memory map, and `1 x 16` for keyboard input.
