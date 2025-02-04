@@ -58,14 +58,25 @@ Vulcan-16/
 ```
 
 # Usage Instructions
-## How to Run the Hardware Simulations
-1. Open the HDL files in the hardware simulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE](https://nand2tetris.github.io/web-ide/chip)
+## How to Run the Hardware Chips(.hdl)
+1. Open the HDL files in the hardware simulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE Hardware Simulator](https://nand2tetris.github.io/web-ide/chip)
 2. Run the simulations.
 
-## How to Load and Execute the Assembly Programs
-1. Load the assembly program into the CPU emulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE](https://nand2tetris.github.io/web-ide/chip)
+## How to Load and Execute the Assembly Programs(.hack or .asm)
+1. Load the assembly program into the CPU emulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE CPU Emulator](https://nand2tetris.github.io/web-ide/cpu)
 2. Set the initial values in the RAM.
 3. Run the program and observe the results.
+
+## How to Load and Execute the VM Programs(.vm)
+1. Load the VM program into the VM emulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE VM Emulator](https://nand2tetris.github.io/web-ide/vm)
+2. Change the execution speed to Fast.
+3. Run the program and observe the results.
+
+## How to Load and Execute the Jack Programs(.jack)
+1. Load the folder in which Jack programs exist into the Jack compiler either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE Jack Compiler](https://nand2tetris.github.io/web-ide/jack)
+2. Click on `Compile` to compile the Jack programs and then click on `Run` to load the generated VM code into the VM emulator.
+3. Change the execution speed to Fast.
+4. Run the program and observe the results.
 
 # References
 ## Books, Courses, and Other Resources Used
