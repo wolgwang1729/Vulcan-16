@@ -1,62 +1,61 @@
-# Introduction
-## Brief Overview of the Project
-This project involves building a Hack computer using the Nand2tetris course and the book "The Elements of Computing Systems: Building a Modern Computer from First Principles" by Noam Nisan and Shimon Schocken. The project includes both hardware and software components, demonstrating the construction of a modern computer from basic logic gates.
+# Vulcan-16: A 16-bit Computer Built from Scratch
+
+## Overview of the Project
+I have always wondered, "What is a computer?" Since childhood, I’ve treated it as a black box. I knew its components—the CPU, input devices, output devices—and their purposes, but I never truly understood how a computer actually works. How does a CPU, which supposedly only understands 1s and 0s, handle code? How does typing `print("Hello World!")` light up thousands of pixels on the screen? What happens inside the CPU when you write something as simple as `x = 5`? To answer these questions, my curiosity led me to build Vulcan-16.
+
+**Vulcan-16** is a fully functional 16-bit computer designed and implemented from the ground up. Starting with basic logic gates, this project explores the intersection of hardware and software. It’s far from perfect, but that’s the point. Vulcan-16 is my proof that with enough stubbornness, you can turn NAND gates into something that feels alive.
+
+This project is my attempt to turn "How does this even work?!" into "Oh. That’s how." It’s also the longest project I’ve ever worked on, and the one I’ve spent the most time on(at least up to the point of writing this).
+
 
 ## Purpose and Goals
-The goal of this project is to understand the inner workings of a computer by constructing one from scratch. This includes designing the hardware components using HDL (Hardware Description Language) and writing software programs in assembly language to run on the constructed computer.
-The goal is also to implement the things I learned in University's third semester curriculum in course Digital Logic Design(CS201n) and Operating Systems Design(CS207n).
+The goal of this project is simple yet ambitious: to understand how a computer works by building one from scratch. This means designing every hardware component—from logic gates to the CPU—using HDL (Hardware Description Language), writing software programs in assembly language, implementing a virtual machine and designing a compiler to translate high-level code into machine code.
+
+But Vulcan-16 isn’t just about building a computer. It’s about bridging the gap between theory and practice. Through this project, I aimed to apply the concepts I learned in my university courses—Digital Logic Design (CS201n), Operating Systems Design (CS207n) and Computer System Architecture and Organization(CS206)—to a real, tangible system.
+
+In short, Vulcan-16 is my way of answering the question: "Can I take what I’ve learned in the classroom and use it to create something that actually works?" Spoiler: It’s harder than it sounds, but infinitely more rewarding.
 
 # Technical Specifications
 - The 16-bit computer, I built, is based on Harvard Architecture (which is a variant of Von Neumann Architecture). 
-- **Architecture of Computer:**
+
+## **Architecture of Computer:**
 ![Hack Computer Architecture](https://i.sstatic.net/cwLb8LVg.png)
-- **Architecture of CPU:**
-![CPU Architecture](https://i.sstatic.net/emWTfTvI.png)
-- **Architecture of Memory:**
-![CPU Architecture](https://i.sstatic.net/51MRItuH.png)
 - The computer consists of:
   - `32K x 16` ROM, in which any program can be loaded.
   - `24577 x 16` memory, composed of `16K x 16` RAM, `8K x 16` for the screen memory map, and `1 x 16` for keyboard input.
   - The CPU contains a `1 x 16` data register, a `1 x 16` address register, and an ALU capable of performing 18 specified operations.
+## **Architecture of CPU:**
+![CPU Architecture](https://i.sstatic.net/emWTfTvI.png)
+## **Architecture of Memory:**
+![CPU Architecture](https://i.sstatic.net/51MRItuH.png)
 - Detailed specification can be found in the `readme.md` of sub folders.
 
 
 # Project Structure
-## Description of the Directory Layout
-- [`Project1/`](Project1/): Contains basic logic gates implementations.
-- [`Project2/`](Project2/): Contains arithmetic and logical units.
-- [`Project3/`](Project3/): Contains sequential logic components.
-- [`Project4/`](Project4/): Contains the machine language programs.
-- [`Project5/`](Project5/): Contains the CPU and overall computer architecture.
-- [`Project6/`](Project6/): Contains the assembler which is implemented in Python.
-- [`Project7/`](Project7/): Contains the virtual machine (VM) translator implemented in python which translates VM code to assembly language by handling Arithmetic/Logical commands and Memory Segment commands.
-- [`Project8/`](Project8/): Contains the virtual machine (VM) translator implemented in python which translates VM code to assembly language by handling Arithmetic/Logical commands, Memory Segment commands, Branching commands and Function commamds.
-- [`Project9/`](Project9/): Contains the GuessANumber game implemented in Jack language.
-- [`Project10/`](Project10/): Contains the JackAnalyzer which parses Jack programs and outputs XML files.
-- [`Project11/`](Project11/): Contains the JackCompiler which compiles Jack programs into VM code.
-- [`Project12/`](Project12/): Contains the implementation of the Jack OS, including various system classes like `Sys`, `Output`, `Screen`, `Keyboard`, `String`,`Array`and `Memory`.
-
-## Explanation of Each Project's Purpose
-- **Project1**: Building basic gates like And, Or, Not, Xor, Mux, Dmux.
-- **Project2**: Constructing adders and ALU.
-- **Project3**: Developing sequential logic elements like program counter and registers of various sizes.
-- **Project4**: Writing assembly programs for the Hack computer.
-- **Project5**: Integrating all components into a working computer.
-- **Project6**: Developing an assembler to translate assembly language programs into machine code.
-- **Project7**: Implementing the first part of the virtual machine (VM) translator to handle stack arithmetic and memory access commands.
-- **Project8**: Extending the VM translator to handle program control and function commands, completing the implementation of the Hack virtual machine.
-- **Project9**: Developing a GuessANumber game in jack language.
-- **Project10**: Developing the JackAnalyzer which parses Jack programs and outputs XML files.
-- **Project11**: Developing the JackCompiler which compiles Jack programs into VM code.
-- **Project12**: Implementing the Jack operating system (OS), which includes writing various system classes such as `Sys`, `Output`, `Screen`, `Keyboard`, `String`, `Array`, and `Memory`. These classes provide essential services and abstractions for Jack programs, enabling higher-level programming and interaction with the hardware.
-
-# Hardware Components
-## List and Description of All Hardware Components
-- **ALU**: Arithmetic Logic Unit, performs arithmetic and logical operations.
-- **RAM**: Random Access Memory, stores data.
-- **CPU**: Central Processing Unit, executes instructions.
-- **Screen**: Displays output.
-- **Keyboard**: Inputs data.
+```bash
+Vulcan-16/
+├── Hardware/          # HDL implementations of CPU, memory, and peripherals
+│   ├── LogicGates/    # Basic gates (AND, OR, NOT, etc.)
+│   ├── ALU/           # Arithmetic Logic Unit
+│   └── CPU/           # Central Processing Unit
+│
+├── Software/          # Tools to program Vulcan-16
+│   ├── Assembler/     # Translates assembly to machine code
+│   ├── Compiler/      # Compiles Jack to VM code
+│   └── VMTranslator/  # Converts VM code to assembly
+│
+├── OS/                # Jack Operating System
+│   ├── Sys/           # System services
+│   ├── Screen/        # Graphics driver
+│   ├── Keyboard/      # Input handling
+│   ├── Memory/        # Memory management utilities
+│   ├── Math/          # Mathematical operations
+│   ├── String/        # String manipulation utilities
+│   └── Array/         # Array handling and operations
+│
+└── Programs/          # Programs for Vulcan-16
+    └── Games/         # GuessANumber
+```
 
 # Usage Instructions
 ## How to Run the Hardware Simulations
@@ -68,40 +67,20 @@ The goal is also to implement the things I learned in University's third semeste
 2. Set the initial values in the RAM.
 3. Run the program and observe the results.
 
-# Testing and Validation
-## Description of the Testing Process
-Each hardware component and software program is tested using predefined test scripts provided in the Nand2tetris course. These scripts automate the testing process and verify the correctness of the implementations.
-
-## How to Verify the Correctness of the Hardware Components and Software Programs
-1. Load the test script in the hardware simulator.
-2. Run the script and check the output against the expected results.
-3. Debug and fix any issues that arise.
-
 # References
 ## Books, Courses, and Other Resources Used
+- "Code: The Hidden Language of Computer Hardware and Software" by Charles Petzold.
 - "The Elements of Computing Systems: Building a Modern Computer from First Principles" by Noam Nisan and Shimon Schocken.
+- "Digital Design" by M. Morris Mano.
+- "Computer System Architecture" by M. Morris Mano.
 - Nand2tetris course materials.
 
-## Links to Additional Reading Materials
-- [Book](https://www.nand2tetris.org/book)
-- [Nand2tetris Official Website](https://www.nand2tetris.org/)
-- [Course on Coursera](https://www.coursera.org/learn/build-a-computer)
-
-# Contributing
-## Guidelines for Contributing to the Project
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Submit a pull request with a detailed description of your changes.
-
-## How to Report Issues and Suggest Improvements
-- Open an issue on the project's GitHub repository.
-- Provide a detailed description of the issue or suggestion.
-
 # License
-## Information About the Project's License
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
 # Acknowledgments
 ## Credits to Authors, Contributors, and Resources
 - Noam Nisan and Shimon Schocken for the Nand2tetris course and book.
-- The Nand2tetris community for support and resources.
+- Charles Petzold and M. Morris Mano for their respective books.
+- Mark Armbrust for the Random.jack file.
+- The Open Source community for support and resources.
