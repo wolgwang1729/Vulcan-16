@@ -19,7 +19,7 @@ In short, Vulcan-16 is my way of answering the question: "Can I take what I’ve
 - The 16-bit computer, I built, is based on Harvard Architecture (which is a variant of Von Neumann Architecture). 
 
 ## **Architecture of Computer:**
-![Hack Computer Architecture](https://i.sstatic.net/guKsKZIz.png)
+![Vulcan-16 Computer Architecture](https://i.sstatic.net/guKsKZIz.png)
 - The computer consists of:
   - `32K x 16` ROM, in which any program can be loaded.
   - `24577 x 16` memory, composed of `16K x 16` RAM, `8K x 16` for the screen memory map, and `1 x 16` for keyboard input.
@@ -27,8 +27,10 @@ In short, Vulcan-16 is my way of answering the question: "Can I take what I’ve
 ## **Architecture of CPU:**
 ![CPU Architecture](https://i.sstatic.net/emWTfTvI.png)
 ## **Architecture of Memory:**
-![CPU Architecture](https://i.sstatic.net/51MRItuH.png)
+![Memory Architecture](https://i.sstatic.net/51MRItuH.png)
 - Detailed specification can be found in the `readme.md` of sub folders.
+## **Softwares:**
+![Softwares](https://i.sstatic.net/CbKSHYDr.png)
 
 
 # Project Structure
@@ -77,6 +79,11 @@ Vulcan-16/
 2. Click on `Compile` to compile the Jack programs and then click on `Run` to load the generated VM code into the VM emulator.
 3. Change the execution speed to Fast.
 4. Run the program and observe the results.
+
+# Future Roadmap
+- Develop a web-based hardware simulator and IDE to test various architectures, enabling more flexible experimentation beyond the current setup.
+- Translate key hardware chips into popular HDL languages such as Verilog and VHDL to broaden compatibility and integration.
+- Port Vulcan-16 onto an FPGA platform to validate designs on actual hardware and enhance performance.
 
 # References
 ## Books, Courses, and Other Resources Used
