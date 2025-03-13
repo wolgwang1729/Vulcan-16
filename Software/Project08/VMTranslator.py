@@ -1,5 +1,5 @@
 import os
-class Parser:
+class VMParser:
     def __init__(self, directory,counter=1,returnCounter=1,callCounter=1):
         self.directory=directory
         self.filename=self.getFilename()
@@ -211,7 +211,7 @@ class VMTranslatorFile:
     
     def getAssemblyInstructions(self):
         assemblyInstructions = []
-        parser=Parser(self.directory.split(".")[0].strip(),self.counter,self.returnCounter,self.callCounter)
+        parser=VMParser(self.directory.split(".")[0].strip(),self.counter,self.returnCounter,self.callCounter)
         for line in self.relevantVMInstructions:
             assemblyInstructions.append(parser(line))
         self.counter,self.returnCounter=parser.getCounters()
