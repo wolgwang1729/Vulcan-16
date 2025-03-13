@@ -1,4 +1,4 @@
-class Parser:
+class ASMParser:
     def __init__(self,symbolTable, assemblyInstruction=""):
         self.assemblyInstruction = assemblyInstruction
         self.instructionType = self.getInstructionType()
@@ -196,7 +196,7 @@ class ASMFile:
             "SCREEN": 16384,
             "KBD": 24576,
         }
-        parser = Parser(symbolTable)
+        parser = ASMParser(symbolTable)
         i=0
         for line in self.relevantLinesLabels:
             if line.startswith("("):
@@ -207,7 +207,7 @@ class ASMFile:
 
     def getHackInstructions(self):
         hackInstructions = []
-        parser = Parser(self.symbolTable)
+        parser = ASMParser(self.symbolTable)
         for line in self.relevantLines:
             # print(f"line: {line}")
             hackInstructions.append(parser(line))
