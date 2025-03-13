@@ -23,7 +23,7 @@ class VMParser:
         return self.assemblyInstruction
     
     def getCounters(self):
-        return self.counter,self.returnCounter
+        return self.counter,self.returnCounter,self.callCounter
 
     def getCommandType(self, str):
         if "push" in str:
@@ -185,7 +185,7 @@ class VMTranslatorFile:
         self.writeAssemblyFile()
 
     def getCounters(self):
-        return self.counter,self.returnCounter
+        return self.counter,self.returnCounter,self.callCounter
     
     def getFilename(self):
         if "\\" in self.directory:
@@ -214,7 +214,7 @@ class VMTranslatorFile:
         parser=VMParser(self.directory.split(".")[0].strip(),self.counter,self.returnCounter,self.callCounter)
         for line in self.relevantVMInstructions:
             assemblyInstructions.append(parser(line))
-        self.counter,self.returnCounter=parser.getCounters()
+        self.counter,self.returnCounter,self.callCounter=parser.getCounters()
         return assemblyInstructions
     
     def writeAssemblyFile(self):
@@ -253,7 +253,7 @@ class VMTranslator:
             for file in os.listdir(self.directory):
                 if file.endswith(".vm"):
                     vmt=VMTranslatorFile(os.path.join(self.directory, file),self.counter,self.returnCounter,self.callCounter)
-                    self.counter,self.returnCounter=vmt.getCounters()
+                    self.counter,self.returnCounter,self.callCounter=vmt.getCounters()
 
     def concatenateFiles(self):
         if not self.isFile:
@@ -267,4 +267,4 @@ class VMTranslator:
                         os.remove(os.path.join(self.directory, file))
             print(f"File {os.path.join(self.directory,self.filename)}.asm has been created successfully")
 
-VMTranslator("Project8\VMFiles\Sys.vm")
+VMTranslator("Software\Project08\VMFiles\FibonacciElement")
