@@ -1,3 +1,4 @@
+import os
 class Parser:
     def __init__(self, directory):
         self.directory=directory
@@ -166,7 +167,6 @@ class VMTranslator:
         writer = CodeWriter(self.directory.split('.')[0].strip(),self.relevantVMInstructions, self.assemblyInstructions)
         writer.write()
 
-import os
 directory="Project7\VMFiles"
 for filename in os.listdir(directory):
         if filename.endswith(".vm"):
