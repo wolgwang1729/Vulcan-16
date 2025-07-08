@@ -1,7 +1,7 @@
 # Vulcan-16: A 16-bit Computer Built from Scratch
 
 ## Overview of the Project
-I have always wondered, "What is a computer?" Since childhood, I’ve treated it as a black box. I knew its components—the CPU, input devices, output devices—and their purposes, but I never truly understood how a computer actually works. How does a CPU, which supposedly only understands 1s and 0s, handle code? How does typing `print("Hello World!")` light up thousands of pixels on the screen? What happens inside the CPU when you write something as simple as `x = 5`? To answer these questions, my curiosity led me to build Vulcan-16.
+I have always wondered, "What is a computer?" Since childhood, I’ve treated it as a black box. I knew its components: the CPU, input devices, output devices—and their purposes, but I never truly understood how a computer actually works. How does a CPU, which supposedly only understands 1s and 0s, handle code? How does typing `print("Hello World!")` light up thousands of pixels on the screen? What happens inside the CPU when you write something as simple as `x = 5`? To answer these questions, my curiosity led me to build Vulcan-16.
 
 **Vulcan-16** is a fully functional 16-bit computer designed and implemented from the ground up. Starting with basic logic gates, this project explores the intersection of hardware and software. It’s far from perfect, but that’s the point. Vulcan-16 is my proof that with enough stubbornness, you can turn NAND gates into something that feels alive.
 
