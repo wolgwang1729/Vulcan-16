@@ -239,6 +239,8 @@ class VMParser:
     def getFilename(self):
         if "\\" in self.directory:
             return self.directory.split("\\")[-1].split('.')[0].strip()
+        elif "/" in self.directory:
+            return self.directory.split("/")[-1].split('.')[0].strip()
         else:
             return self.directory.split('.')[0].strip()
 
@@ -387,6 +389,8 @@ class CodeWriter:
     def getFilename(self):
         if "\\" in self.directory:
             return self.directory.split("\\")[-1].split('.')[0].strip()
+        elif "/" in self.directory:
+            return self.directory.split("/")[-1].split('.')[0].strip()
         else:
             return self.directory.split('.')[0].strip()
 
@@ -419,6 +423,8 @@ class VMTranslatorFile:
     def getFilename(self):
         if "\\" in self.directory:
             return self.directory.split("\\")[-1].split('.')[0].strip()
+        elif "/" in self.directory:
+            return self.directory.split("/")[-1].split('.')[0].strip()
         else:
             return self.directory.split('.')[0].strip()
 
@@ -470,6 +476,8 @@ class VMTranslator:
     def getFilename(self):
         if "\\" in self.directory:
             return self.directory.split("\\")[-1].split('.')[0].strip()
+        elif "/" in self.directory:
+            return self.directory.split("/")[-1].split('.')[0].strip()
         else:
             return self.directory.split('.')[0].strip()    
         
@@ -1489,7 +1497,7 @@ class JackCompiler:
 
     def createVM(self):
         for file in self.filesJack:
-            print(file)
+            # print(file)
             tokenizer = JackTokenizerFile(self.directoryPath + "/" + file)
             output_file = open(self.directoryPath + "/" + file[:-5] + ".vm", "w")
             output_file.write(f"// Compiled {file}:\n")
@@ -1500,7 +1508,7 @@ class JackCompiler:
             output_file.close()
 
     def createASM(self):
-        print(self.directoryPath)
+        # print(self.directoryPath)
         VMTranslator(self.directoryPath)
 
     def getFilesASM(self):
@@ -1512,9 +1520,9 @@ class JackCompiler:
     
     def creatHack(self):
         for file in self.filesASM:
-            print(file)
+            # print(file)
             asmFile=ASMFile(os.path.join(self.directoryPath, file))
             asmFile.writeHackFile()
             
 
-JackCompiler("Software\GuessANumber")
+JackCompiler("Programs/Project09/GuessANumber")
