@@ -101,44 +101,57 @@ const Screen = ({ memory, isRunning }) => {
   );
 };
 
-// Keyboard Component
-const Keyboard = ({ onKeyPress, currentKey }) => {
-  const keys = [
-    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
-    ['SPACE', 'ENTER']
-  ];
-
-  const getKeyCode = (key) => {
-    if (key === 'SPACE') return 32;
-    if (key === 'ENTER') return 128;
-    return key.charCodeAt(0);
+// Key Display Component with Toggle
+const KeyDisplay = ({ currentKey, pcKeyboardEnabled, setPcKeyboardEnabled, isRunning }) => {
+  const getKeyName = (keyCode) => {
+    if (!keyCode) return 'None';
+    if (keyCode === 32) return 'SPACE';
+    if (keyCode === 13) return 'ENTER';
+    if (keyCode >= 65 && keyCode <= 90) return String.fromCharCode(keyCode);
+    if (keyCode >= 48 && keyCode <= 57) return String.fromCharCode(keyCode);
+    return `Key(${keyCode})`;
   };
 
   return (
-    <div className="bg-gray-800 p-2">
-      <div className="text-xs text-gray-400 mb-2">Keyboard (Current: {currentKey || 'None'})</div>
-      <div className="space-y-1">
-        {keys.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center space-x-1">
-            {row.map(key => (
-              <button
-                key={key}
-                className={`px-2 py-1 text-xs rounded ${
-                  currentKey === getKeyCode(key) 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                }`}
-                onClick={() => onKeyPress(getKeyCode(key))}
-                style={{ minWidth: key === 'SPACE' ? '80px' : '30px' }}
-              >
-                {key === 'SPACE' ? '⎵' : key}
-              </button>
-            ))}
+    <div className="bg-gray-800 p-3 rounded">
+      <div className="text-xs text-gray-400 mb-2 flex justify-between items-center">
+        <span>PC Keyboard Input</span>
+        <button
+          onClick={() => setPcKeyboardEnabled(!pcKeyboardEnabled)}
+          className={`px-2 py-1 text-xs rounded ${
+            pcKeyboardEnabled 
+              ? 'bg-green-600 text-white hover:bg-green-700' 
+              : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+          }`}
+          title={pcKeyboardEnabled ? 'Disable PC Keyboard' : 'Enable PC Keyboard'}
+        >
+          {pcKeyboardEnabled ? 'ON' : 'OFF'}
+        </button>
+      </div>
+      
+      <div className="text-center">
+        <div className="text-xs text-gray-500 mb-1">Current Key:</div>
+        <div className={`text-2xl font-bold px-4 py-2 rounded ${
+          currentKey && pcKeyboardEnabled && isRunning
+            ? 'bg-blue-600 text-white' 
+            : 'bg-gray-700 text-gray-400'
+        }`}>
+          {pcKeyboardEnabled && isRunning ? getKeyName(currentKey) : 'OFF'}
+        </div>
+        {currentKey && pcKeyboardEnabled && isRunning && (
+          <div className="text-xs text-gray-500 mt-1">
+            Code: {currentKey}
           </div>
-        ))}
+        )}
+      </div>
+      
+      <div className="text-xs text-gray-500 mt-2 text-center">
+        {pcKeyboardEnabled 
+          ? isRunning 
+            ? 'Press any key on your keyboard'
+            : 'Start simulation to use keyboard'
+          : 'Toggle ON to enable keyboard input'
+        }
       </div>
     </div>
   );
@@ -171,14 +184,14 @@ const CpuRegisters = ({ aRegister, dRegister, pc, cycles }) => {
   );
 };
 
-// RAM Editor Component - FIXED
+// RAM Editor Component
 const RamEditor = ({ memory, setMemory, isRunning }) => {
   const [selectedAddress, setSelectedAddress] = useState(0);
   const [newValue, setNewValue] = useState(0);
 
   const handleAddressChange = (e) => {
     const address = parseInt(e.target.value, 10);
-    if (!isNaN(address) && address >= 0 && address < 24577) { // Updated validation range
+    if (!isNaN(address) && address >= 0 && address < 24577) {
       setSelectedAddress(address);
       setNewValue(memory[address] || 0);
     }
@@ -195,7 +208,7 @@ const RamEditor = ({ memory, setMemory, isRunning }) => {
     if (selectedAddress >= 0 && selectedAddress < 24577) {
       setMemory(prev => {
         const newMemory = [...prev];
-        newMemory[selectedAddress] = newValue & 0xFFFF; // Ensure 16-bit value
+        newMemory[selectedAddress] = newValue & 0xFFFF;
         return newMemory;
       });
     }
@@ -212,7 +225,7 @@ const RamEditor = ({ memory, setMemory, isRunning }) => {
             value={selectedAddress}
             onChange={handleAddressChange}
             min="0"
-            max="24576" // Updated input range
+            max="24576"
             className="bg-gray-700 text-white px-3 py-1 text-sm rounded outline-none flex-1"
             placeholder="Address"
             disabled={isRunning}
@@ -270,26 +283,75 @@ const HardwareSimulator = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [outputWidth, setOutputWidth] = useState(400); 
   const [isResizing, setIsResizing] = useState(false);
-  const [editorWidth, setEditorWidth] = useState(null); // NEW
+  const [editorWidth, setEditorWidth] = useState(null);
 
-  // Hardware simulation state - FIXED MEMORY SIZE
+  // Hardware simulation state
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [rom, setRom] = useState(new Array(32768).fill(0)); // 32K ROM
-  const [memory, setMemory] = useState(new Array(24577).fill(0)); // Updated memory size
-  const [pc, setPc] = useState(0); // Program Counter
+  const [rom, setRom] = useState(new Array(32768).fill(0));
+  const [memory, setMemory] = useState(new Array(24577).fill(0));
+  const [pc, setPc] = useState(0);
   const [aRegister, setARegister] = useState(0);
   const [dRegister, setDRegister] = useState(0);
   const [currentKey, setCurrentKey] = useState(0);
   const [cycles, setCycles] = useState(0);
+  const [pcKeyboardEnabled, setPcKeyboardEnabled] = useState(false);
 
   const simulationRef = useRef(null);
 
-  // Initialize memory mapping - FIXED
+  // PC Keyboard Event Listeners with Toggle
+  useEffect(() => {
+    // Only add event listeners if PC keyboard is enabled AND simulation is running
+    if (!pcKeyboardEnabled || !isRunning) {
+      return;
+    }
+
+    const handleKeyDown = (e) => {
+      // Only capture keys when NOT focused on input fields or textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      
+      e.preventDefault();
+      
+      let keyCode = 0;
+      
+      if (e.key === ' ') {
+        keyCode = 32; // Space
+      } else if (e.key === 'Enter') {
+        keyCode = 128; // Enter
+      } else if (e.key.length === 1) {
+        keyCode = e.key.toUpperCase().charCodeAt(0);
+      }
+      
+      if (keyCode > 0) {
+        setCurrentKey(keyCode);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      
+      e.preventDefault();
+      setTimeout(() => setCurrentKey(0), 100);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [pcKeyboardEnabled, isRunning]);
+
+  // Initialize memory mapping
   useEffect(() => {
     setMemory(prev => {
-      const newMemory = [...prev]; // Preserve existing memory
-      newMemory[24576] = currentKey; // Only update keyboard
+      const newMemory = [...prev];
+      newMemory[24576] = currentKey;
       return newMemory;
     });
   }, [currentKey]);
@@ -298,14 +360,13 @@ const HardwareSimulator = () => {
   useEffect(() => {
     const activeFile = findFile(activeFileId);
     if (activeFile && activeFile.name.endsWith('.hack')) {
-      // Calculate width for 16 characters (16 bits) + padding
-      const charWidth = 8; // approximate width of monospace character
-      const hackEditorWidth = (16 * charWidth) + 50; // 16 chars + padding
+      const charWidth = 8;
+      const hackEditorWidth = (16 * charWidth) + 50;
       setEditorWidth(hackEditorWidth);
-      setOutputWidth(window.innerWidth - 256 - hackEditorWidth - 10); // sidebar width - editor width - margin
+      setOutputWidth(window.innerWidth - 256 - hackEditorWidth - 10);
     } else {
-      setEditorWidth(null); // Reset to flexible width
-      setOutputWidth(400); // Default output width
+      setEditorWidth(null);
+      setOutputWidth(400);
     }
   }, [activeFileId]);
 
@@ -387,7 +448,7 @@ const HardwareSimulator = () => {
       if (dest & 0b001) { // Memory
         setMemory(prev => {
           const newMemory = [...prev];
-          if (aRegister < 24577) { // Updated memory write bounds
+          if (aRegister < 24577) {
             newMemory[aRegister] = aluResult;
           }
           return newMemory;
@@ -443,11 +504,6 @@ const HardwareSimulator = () => {
     };
   }, [isRunning, isPaused, pc, rom, aRegister, dRegister, memory]);
 
-  const handleKeyPress = (keyCode) => {
-    setCurrentKey(keyCode);
-    setTimeout(() => setCurrentKey(0), 100); // Release key after 100ms
-  };
-
   const findFile = (id, items = fileSystem) => {
     for (const item of items) {
       if (item.id === id) return item;
@@ -489,31 +545,30 @@ const HardwareSimulator = () => {
   const activeFile = findFile(activeFileId);
 
   useEffect(() => {
-  if (!activeFile) return;
-  
-  if (activeFile.name.endsWith('.hack')) {
-    try {
-      const lines = activeFile.content.trim().split('\n');
-      const newRom = new Array(32768).fill(0);
-      
-      lines.forEach((line, index) => {
-        if (index < 32768 && line.trim()) {
-          newRom[index] = parseInt(line.trim(), 2);
-        }
-      });
-      
-      setRom(newRom);
-      setPc(0);
-      setARegister(0);
-      setDRegister(0);
-      setCycles(0);
-      setOutput('Loaded .hack file into ROM. Ready to run.');
-    } catch (error) {
-      setOutput(`Error loading .hack file: ${error.message}`);
+    if (!activeFile) return;
+    
+    if (activeFile.name.endsWith('.hack')) {
+      try {
+        const lines = activeFile.content.trim().split('\n');
+        const newRom = new Array(32768).fill(0);
+        
+        lines.forEach((line, index) => {
+          if (index < 32768 && line.trim()) {
+            newRom[index] = parseInt(line.trim(), 2);
+          }
+        });
+        
+        setRom(newRom);
+        setPc(0);
+        setARegister(0);
+        setDRegister(0);
+        setCycles(0);
+        setOutput('Loaded .hack file into ROM. Ready to run.');
+      } catch (error) {
+        setOutput(`Error loading .hack file: ${error.message}`);
+      }
     }
-  }
-}, [activeFileId, activeFile?.content]);
-
+  }, [activeFileId, activeFile?.content]);
 
   const handleFileSelect = (fileId) => {
     const file = findFile(fileId);
@@ -642,15 +697,15 @@ const HardwareSimulator = () => {
 
     if (extension === 'hack') {
       if (isRunning) {
-        // Stop simulation
         setIsRunning(false);
         setIsPaused(false);
+        setPcKeyboardEnabled(false); // Disable PC keyboard when stopping
         setOutput('Simulation stopped');
       } else {
         try {
           setIsRunning(true);
           setIsPaused(false);
-          setOutput('Hardware simulation started\nLoaded program into ROM\nScreen and keyboard active');
+          setOutput('Hardware simulation started\nLoaded program into ROM\nScreen active\nToggle PC Keyboard ON in the panel to use keyboard input');
         } catch (error) {
           setOutput(`Error loading .hack file: ${error.message}`);
         }
@@ -907,7 +962,6 @@ const HardwareSimulator = () => {
           
           <div className="ml-auto flex items-center px-4">
             <div className="relative flex items-center">
-              {/* Run/Stop button */}
               <button
                 onClick={handleRunStop}
                 disabled={isLoading || !activeFile}
@@ -932,7 +986,6 @@ const HardwareSimulator = () => {
                 )}
               </button>
 
-              {/* Target language dropdown - only for non-hack files */}
               {activeFile && !findParentFolder(activeFileId) && 
                 activeFile.name.split('.').pop() !== 'hack' && (
                 <button
@@ -971,12 +1024,12 @@ const HardwareSimulator = () => {
           </div>
         </div>
 
-        {/* Editor and Output Container - MODIFIED LAYOUT */}
+        {/* Editor and Output Container */}
         <div className="flex-1 flex" style={{ 
           position: 'relative', 
           maxHeight: 'calc(100vh - 50px)' 
         }}>
-          {/* Editor Area - DYNAMIC WIDTH */}
+          {/* Editor Area */}
           <div 
             style={{ 
               width: editorWidth || 'auto',
@@ -1003,7 +1056,7 @@ const HardwareSimulator = () => {
             )}
           </div>
 
-          {/* Resizable Divider - HIDE FOR .hack FILES */}
+          {/* Resizable Divider */}
           {!editorWidth && (
             <div
               onMouseDown={startResizing}
@@ -1017,7 +1070,7 @@ const HardwareSimulator = () => {
             />
           )}
 
-          {/* Output Panel - ENHANCED LAYOUT */}
+          {/* Output Panel */}
           <div 
             style={{ 
               width: outputWidth, 
@@ -1057,15 +1110,20 @@ const HardwareSimulator = () => {
                   />
                 </div>
                 
-                {/* Right column - Screen and Keyboard */}
+                {/* Right column - Screen and Key Display */}
                 <div className="flex-1 flex flex-col p-2">
                   <Screen memory={memory} isRunning={isRunning} />
-                  <Keyboard onKeyPress={handleKeyPress} currentKey={currentKey} />
+                  <KeyDisplay 
+                    currentKey={currentKey} 
+                    pcKeyboardEnabled={pcKeyboardEnabled}
+                    setPcKeyboardEnabled={setPcKeyboardEnabled}
+                    isRunning={isRunning}
+                  />
                 </div>
               </div>
             ) : (
               <pre className="flex-1 p-4 overflow-auto bg-gray-900 text-green-400 font-mono text-sm">
-                {output || '//Compilation output will appear here\n//Run .hack files to start hardware simulation'}
+                {output || '//Compilation output will appear here\n//Run .hack files to start hardware simulation\n//Toggle PC Keyboard ON when running to use keyboard input'}
               </pre>
             )}
           </div>
