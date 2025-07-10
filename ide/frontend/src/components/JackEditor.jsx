@@ -13,6 +13,113 @@ import {
 } from 'react-icons/fa';
 import { AiOutlineFile } from 'react-icons/ai';
 
+const defaultMainJackCode = 
+`
+class Main {
+    function void main() {
+        var int userInput;
+        var int randomNumber;
+        var int counter;
+
+        do Output.printString("                        Guess a number");
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.printString("If you guess the number correctly, you win!");
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        let counter = 0;
+        let userInput = Keyboard.readInt("Enter a number between 0 and 10: ");
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.printString("Are you ready for the verdict? Press enter to continue.");
+        let counter = Main.measureTime();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Output.println();
+        do Random.setSeed(counter);
+		do Output.println();
+        do Output.println();
+        let randomNumber = Random.randRange(10);
+
+        if (userInput = randomNumber) {
+            do Output.printString("Congratulations! You guessed the number correctly!");
+            do Output.println();
+        } else {
+            do Output.printString("Sorry, you guessed the number incorrectly.");
+            do Output.println();
+            do Output.println();
+            do Output.printString("The correct number was: ");
+            do Output.printInt(randomNumber);
+        }
+        return;
+    }
+
+    function int measureTime() {
+        var int msCounter;
+        var char input;
+        var int key;
+        let msCounter = 0;
+
+        while (true) {
+			do Sys.wait(1);
+            let msCounter = msCounter + 1;
+            let key= Keyboard.keyPressed();
+			if(key=128) {
+                    return msCounter;
+                }
+        }
+
+        return msCounter;
+    }
+}
+`
+const defaultRandomJackCode = 
+`
+// Copyright 2012 Mark Armbrust. Permission granted for educational use.
+/** Random.jack -- A not so random PRNG. */
+
+class Random {
+    static int seed;
+    
+    function void setSeed(int newSeed) {
+        let seed = newSeed;
+        return;
+    }
+
+    function int rand() {
+        /** return a random number in the range 0..32767 */
+        let seed = seed + 20251;
+        if (seed < 0) {
+            let seed = seed - 32767 - 1;
+        }
+        return seed;
+    }
+
+    function int randRange(int range) {
+        /** return a random number in the range 0..range */
+        var int mask;
+        var int ret;
+        let mask = 1;
+        while (mask < range) {
+            let mask = mask * 2 + 1;
+        }
+        let ret = Random.rand() & mask;
+        while (ret > range) {
+            let ret = Random.rand() & mask;
+        }
+        return ret;
+    }
+
+}
+`
+
+
 const JackEditor = () => {
   const [fileSystem, setFileSystem] = useState([
     {
@@ -20,8 +127,8 @@ const JackEditor = () => {
       name: 'GuessANumber',
       type: 'folder',
       children: [
-        { id: 'file-1', name: 'Main.jack', type: 'file', content: '// Jack code here' },
-        { id: 'file-2', name: 'Random.jack', type: 'file', content: '// Jack code here' },
+        { id: 'file-1', name: 'Main.jack', type: 'file', content: defaultMainJackCode },
+        { id: 'file-2', name: 'Random.jack', type: 'file', content: defaultRandomJackCode },
       ],
     },
   ]);

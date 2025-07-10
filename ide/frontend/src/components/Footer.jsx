@@ -1,4 +1,5 @@
 import React from 'react';
+import VLogo from '../assets/PixelatedV.png';
 
 const Footer = () => {
   return (
@@ -9,22 +10,13 @@ const Footer = () => {
           {/* Project Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">V</span>
-              </div>
+              <img src={VLogo} alt="Vulcan Logo" className="w-10 h-10 rounded-lg" />
               <h3 className="text-lg font-semibold text-white">Vulcan-16</h3>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-3">
               A complete 16-bit computer system with compiler, virtual machine, and assembler. 
               Built from the ground up for educational and development purposes.
             </p>
-            <div className="flex items-center space-x-4">
-              <span className="text-xs text-gray-500">Version 1.0.0</span>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-gray-500">System Online</span>
-              </div>
-            </div>
           </div>
 
           {/* Quick Links */}
