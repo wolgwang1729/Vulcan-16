@@ -32,10 +32,7 @@ const JackEditor = () => {
         switch (lang) {
           case 'assembly': return 'asm';
           case 'jack': return 'jack';
-          case 'c': return 'c';
-          case 'cpp': return 'cpp';
-          case 'python': return 'py';
-          case 'javascript': return 'js';
+          case 'vm': return 'vm';
           default: return 'txt';
         }
       };
