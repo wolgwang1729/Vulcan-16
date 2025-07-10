@@ -235,7 +235,7 @@ const JackEditor = () => {
                   
                   {/* File creation form inside folder */}
                   {creatingItem && newItemParentId === item.id && (
-                    <div className="mb-2 flex mt-2">
+                    <div className="mb-0 flex mt-1">
                       <input
                         type="text"
                         value={newItemName}
