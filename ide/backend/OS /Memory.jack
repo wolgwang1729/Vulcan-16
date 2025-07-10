@@ -1,0 +1,108 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */ 
+class Memory {
+
+    static Array ram, heap;
+    static int freeList;
+
+    /** Initializes the class. */
+    function void init() {
+        let ram=0;
+
+        let heap=2048;
+        let freeList=2048;
+        let heap[0]=0;
+        let heap[1]=14335;
+        return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+        return ram[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+        let ram[address] = value;
+        return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function Array alloc(int size) {
+        var int prevptr,currptr,returnptr,prevsize;
+        // freeList=8012
+        if(~(heap[freeList]=0)) {
+            if(~(heap[freeList+1]< size)) {
+                if(heap[freeList+1]=size) {
+                    let returnptr = freeList+2;
+                    let freeList = heap[freeList];
+                }
+                else {
+                    let prevsize = heap[freeList+1];
+                    let heap[freeList+1] = (prevsize-size);
+                    let returnptr = freeList+(prevsize-size);
+                }
+                return returnptr;
+            }
+        }
+        let prevptr = freeList;
+        let currptr = heap[freeList];
+        // prevptr=8012
+        // currptr=7513
+        // heap[currptr]=9576
+        while(~(heap[currptr]=0)) {
+            if(~(heap[currptr+1]< size)) {
+                if(heap[currptr+1]=size) {
+                    let heap[prevptr] = heap[currptr];
+                    let returnptr = heap[currptr+2];
+                }
+                else {
+                    let prevsize = heap[currptr+1];
+                    let heap[prevptr] = currptr+(prevsize-size);
+                    let heap[prevptr+1] = (prevsize-size);
+                    let returnptr = currptr+(prevsize-size);
+                }
+                return returnptr;
+            }
+            else {
+                let prevptr = currptr;
+                let currptr = heap[currptr];
+            }
+        }
+        // prevptr=7513
+        // currptr=9576
+        // heap[currptr]=0
+        if(heap[currptr]=0){
+            if(~(heap[currptr+1]< size)) {
+                if(heap[currptr+1]=size) {
+                    let heap[prevptr] = heap[currptr];
+                    let returnptr = heap[currptr+2];
+                }
+                else {
+                    let prevsize = heap[currptr+1];
+                    let heap[prevptr] = currptr+(prevsize-size);
+                    let heap[prevptr+1] = (prevsize-size);
+                    let returnptr = currptr+(prevsize-size);
+                }
+                return returnptr;
+            }
+        }
+        return 0;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+        let heap[o] = freeList;
+        let freeList = o;
+        return;
+    }    
+}

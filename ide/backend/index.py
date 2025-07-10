@@ -46,6 +46,16 @@ def compile():
             # Create folder structure and save files
             folder_path = os.path.join(temp_dir, folder_name)
             os.makedirs(folder_path, exist_ok=True)
+
+            # Copy built-in OS .jack files into the temp folder
+            source_dir = 'OS'
+            for os_file in os.listdir(source_dir):
+                print(os_file)
+                if os_file.endswith('.jack'):
+                    shutil.copy(
+                        os.path.join(source_dir, os_file),
+                        folder_path
+                    )
             
             for file in files:
                 if file.filename:
