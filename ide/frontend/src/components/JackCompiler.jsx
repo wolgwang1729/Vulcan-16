@@ -120,7 +120,7 @@ class Random {
 `
 
 
-const JackEditor = () => {
+const JackCompiler = () => {
   const [fileSystem, setFileSystem] = useState([
     {
       id: 'folder-1',
@@ -704,4 +704,4 @@ const JackEditor = () => {
   );
 };
 
-export default JackEditor;
+export default JackCompiler;

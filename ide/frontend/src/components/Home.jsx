@@ -1,10 +1,10 @@
 import React from 'react';
-import JackEditor from './JackEditor';
+import JackCompiler from './JackCompiler';
 
 function Home() {
   return (
     <div className="h-screen">
-      <JackEditor />
+      <JackCompiler />
     </div>
   );
 }
