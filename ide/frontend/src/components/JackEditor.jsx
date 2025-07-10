@@ -177,7 +177,7 @@ const JackEditor = () => {
   const renderFileTree = (items, depth = 0) => (
     <ul className={`pl-${depth * 4}`}>
       {items.map(item => (
-        <li key={item.id} className="py-1">
+        <li key={item.id} className="py-0">
           {item.type === 'folder' ? (
             <div>
               <div 
@@ -210,7 +210,7 @@ const JackEditor = () => {
             </div>
           ) : (
             <div 
-              className={`flex items-center py-1 hover:bg-gray-700 cursor-pointer ${activeFileId === item.id ? 'bg-gray-700' : ''}`}
+              className={`flex items-center hover:bg-gray-700 cursor-pointer ${activeFileId === item.id ? 'bg-gray-700' : ''}`}
               onClick={() => handleFileSelect(item.id)}
             >
               <span className="mr-2">📄</span>
@@ -232,7 +232,7 @@ const JackEditor = () => {
         
         <div className="flex-1 overflow-y-auto p-2">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs uppercase text-gray-500">Workspace</span>
+            <span className="text-xs uppercase text-gray-500">Vulcan-16</span>
             <div>
               <button 
                 className="text-gray-400 hover:text-white mr-2"
