@@ -28,10 +28,11 @@ def compile():
     try:
         language = request.form.get('language', 'assembly')
         is_folder = request.form.get('is_folder', 'false').lower() == 'true'
+        target_language = request.form.get('target', '.hack')
         
         temp_dir = tempfile.mkdtemp(prefix='temp_compilation_')
         
-        if is_folder:
+        if is_folder and language == 'jack':
             # Handle folder compilation
             folder_name = request.form.get('folder_name')
             if not folder_name:
@@ -109,45 +110,37 @@ def compile():
                 })
             elif language == 'vm' or filename.endswith('.vm'):
                 vm_processor = VMTranslatorFile(filepath)
-                asm_instructions = "\n".join(vm_processor.assemblyInstructions)
-                return jsonify({
-                    'success': True,
-                    'asm_code': asm_instructions,
-                    'message': 'VM file converted successfully',
-                    'filename': filename
-                })
-            elif language == 'jack' or filename.endswith('.jack'):
-                # Single Jack file compilation
-                try:
-                    print(temp_dir)
-                    jack_compiler = JackCompiler(temp_dir)
-                    base_name = filename.rsplit('.', 1)[0]
-                    hack_filename = f"{base_name}.hack"
-                    hack_filepath = os.path.join(temp_dir, hack_filename)
-                    
-                    if os.path.exists(hack_filepath):
-                        with open(hack_filepath, 'r') as hack_file:
-                            hack_content = hack_file.read()
-                        
-                        return jsonify({
-                            'success': True,
-                            'hack_code': hack_content,
-                            'message': 'Jack file compiled successfully',
-                            'filename': hack_filename
-                        })
-                    else:
-                        return jsonify({
-                            'success': False,
-                            'error': f'Compilation completed but {hack_filename} not found',
-                            'message': 'Jack compilation may have failed'
-                        }), 500
-                        
-                except Exception as e:
+                asm_filename = f"{filename.rsplit('.', 1)[0]}.asm"
+                asm_filepath = os.path.join(temp_dir, asm_filename)
+                
+                if os.path.exists(asm_filepath):
+                    with open(asm_filepath, 'r') as asm_file:
+                        asm_instructions = asm_file.read()
+                else:
                     return jsonify({
                         'success': False,
-                        'error': f'JackCompiler error: {str(e)}',
-                        'message': 'Error during Jack compilation'
+                        'error': f'Compilation completed but {asm_filename} not found',
+                        'message': 'VM translation may have failed'
                     }), 500
+                
+                if target_language == '.asm':
+                    return jsonify({
+                        'success': True,
+                        'asm_code': asm_instructions,
+                        'message': 'VM file converted successfully',
+                        'filename': asm_filename
+                    })
+                
+                elif target_language == '.hack':
+                    asm_processor = ASMFile(asm_filepath)
+                    hack_instructions = "\n".join(asm_processor.hackInstructions)
+                    hack_filename = f"{filename.rsplit('.', 1)[0]}.hack"
+                    return jsonify({
+                        'success': True,
+                        'hack_code': hack_instructions,
+                        'message': 'VM file converted to Hack successfully',
+                        'filename': hack_filename
+                    })
             else:
                 return jsonify({'error': 'Unsupported file type'}), 400
             

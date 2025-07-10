@@ -34,6 +34,8 @@ const JackEditor = () => {
   const [creatingItem, setCreatingItem] = useState(null); 
   const [currentFolder, setCurrentFolder] = useState(null);
   const [newItemParentId, setNewItemParentId] = useState(null);
+  const [targetLanguage, setTargetLanguage] = useState('.hack');
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const findFile = (id, items = fileSystem) => {
     for (const item of items) {
@@ -131,6 +133,23 @@ const JackEditor = () => {
       return;
     }
 
+    if (creatingItem === 'file') {
+      const allowedExtensions = ['asm', 'vm', 'jack'];
+      const fileName = newItemName.trim();
+      
+      if (!fileName.includes('.')) {
+        setOutput('Error: File must have an extension (.asm, .vm, or .jack)');
+        return;
+      }
+      
+      const extension = fileName.split('.').pop().toLowerCase();
+      
+      if (!allowedExtensions.includes(extension)) {
+        setOutput(`Error: Only .asm, .vm, and .jack files are allowed. You tried to create: .${extension}`);
+        return;
+      }
+    }
+
     const newItem = {
       id: `${creatingItem}-${Date.now()}`,
       name: newItemName,
@@ -163,32 +182,62 @@ const JackEditor = () => {
     }
   };
 
+  const getTargetOptions = () => {
+    if (!activeFile) return [];
+    const ext = activeFile.name.split('.').pop();
+    switch (ext) {
+      case 'asm':  return ['.hack'];
+      case 'vm':   return ['.asm', '.hack'];
+      case 'jack': return ['.vm', '.asm', '.hack'];
+      default:     return ['.hack'];
+    }
+  };
+
+  const handleSelectTarget = (lang) => {
+    setTargetLanguage(lang);
+    setShowDropdown(false);
+  };
+
   const handleCompile = async () => {
     if (!activeFile || isLoading) return;
-    
+
     setIsLoading(true);
     setOutput('Compiling...');
-    
+
     try {
       const extension = activeFile.name.split('.').pop();
       let language;
-      
-      switch(extension) {
+
+      switch (extension) {
         case 'asm': language = 'assembly'; break;
         case 'jack': language = 'jack'; break;
         case 'vm': language = 'vm'; break;
-        default: 
+        default:
           setOutput(`Error: Unsupported file type (.${extension})`);
           setIsLoading(false);
           return;
       }
-      
-      // Check if the active file is inside a folder
+
       const parentFolder = findParentFolder(activeFileId);
-      
+
+      // Validation check for .asm and .vm files - they must be outside folders
+      if ((language === 'assembly' || language === 'vm') && parentFolder) {
+        setOutput('Error: .asm and .vm files must be compiled outside of folders. Please move this file to the root level first.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validation check for .jack files - they must be inside folders
+      if (language === 'jack' && !parentFolder) {
+        setOutput('Error: .jack files can only be compiled when placed inside a folder. Please move this file to a folder first.');
+        setIsLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append('language', language);
-      
+      formData.append('target', targetLanguage); // Add target language to the request
+
       if (parentFolder && (language === 'jack' || language === 'vm')) {
         // File is inside a folder - send entire folder
         const folderFiles = getAllFilesInFolder(parentFolder);
@@ -211,6 +260,7 @@ const JackEditor = () => {
         
         formData.append('file', file);
         formData.append('is_folder', 'false');
+        formData.append('target', targetLanguage); 
       }
 
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/compile`, {
@@ -402,27 +452,66 @@ const JackEditor = () => {
           </div>
           
           <div className="ml-auto flex items-center px-4">
-            <button
-              onClick={handleCompile}
-              disabled={isLoading || !activeFile}
-              className={`p-2 rounded flex items-center justify-center ${
-                isLoading 
-                  ? 'text-gray-500' 
-                  : activeFile 
-                    ? 'text-green-400 hover:bg-gray-700' 
-                    : 'text-gray-500'
-              }`}
-              title="Compile current file"
-            >
-              {isLoading ? (
-                <FaSpinner className="animate-spin" size={16} />
-              ) : (
-                <FaPlay size={16} />
+            <div className="relative flex items-center hover:bg-gray-800 hover:rounded-sm">
+              {/* Play button - no border */}
+              <button
+                onClick={handleCompile}
+                disabled={isLoading || !activeFile}
+                className={`p-2 rounded flex items-center justify-center
+                            ${isLoading
+                              ? 'text-gray-500'
+                              : activeFile
+                                  ? 'text-green-400 hover:bg-gray-700'
+                                  : 'text-gray-500'}`}
+                title={`Compile → ${targetLanguage}`}
+              >
+                {isLoading ? (
+                  <FaSpinner className="animate-spin" size={16} />
+                ) : (
+                  <FaPlay size={16} />
+                )}
+              </button>
+
+              {/* Arrow button - only show when file is NOT inside a folder */}
+              {activeFile && !findParentFolder(activeFileId) && (
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="p-2 rounded flex items-center justify-center
+                             text-gray-400 hover:text-white hover:bg-gray-700"
+                  title="Select target language"
+                >
+                  <FaChevronDown size={12} />
+                </button>
               )}
-            </button>
+
+              {/* Dropdown */}
+              {showDropdown && (
+                <div
+                  className="absolute right-0 mt-1 w-32 bg-gray-800 border border-gray-700
+                             rounded shadow-lg z-10"
+                  style={{ top: '100%' }}
+                >
+                  {/* Target Language Header */}
+                  <div className="px-2 py-1 text-xs text-gray-400 bg-gray-900 border-b border-gray-600">
+                    Target Language
+                  </div>
+                  
+                  {/* Language Options */}
+                  {getTargetOptions().map(lang => (
+                    <div
+                      key={lang}
+                      onClick={() => handleSelectTarget(lang)}
+                      className={`px-2 py-1 cursor-pointer 
+                                  ${targetLanguage === lang ? 'bg-blue-600' : 'hover:bg-gray-700'}`}
+                    >
+                      {lang}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
         {/* Editor Area */}
         <div className="flex-1 flex">
           {activeFile ? (
