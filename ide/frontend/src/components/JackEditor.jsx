@@ -1,4 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  FaFolder, 
+  FaFolderOpen, 
+  FaFile, 
+  FaPlus, 
+  FaTimes, 
+  FaCheck,
+  FaPlay,
+  FaSpinner
+} from 'react-icons/fa';
+import { AiOutlineFile } from 'react-icons/ai';
 
 const JackEditor = () => {
   // File system state
@@ -186,7 +197,9 @@ const JackEditor = () => {
                 className="flex items-center py-1 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setCurrentFolder(currentFolder === item.id ? null : item.id)}
               >
-                <span className="mr-2">📁</span>
+                <span className="mr-2 text-blue-400">
+                  {currentFolder === item.id ? <FaFolderOpen size={14} /> : <FaFolder size={14} />}
+                </span>
                 <span>{item.name}</span>
               </div>
               {currentFolder === item.id && (
@@ -199,7 +212,7 @@ const JackEditor = () => {
                       className="text-xs text-gray-400 hover:text-white mt-1 flex items-center"
                       onClick={() => handleCreateItem('file', item.id)}
                     >
-                      <span className="mr-1">+</span> New File
+                      <FaPlus className="mr-1" size={10} /> New File
                     </button>
                   )}
                   
@@ -216,10 +229,10 @@ const JackEditor = () => {
                         onKeyDown={(e) => e.key === 'Enter' && handleSaveNewItem()}
                       />
                       <button 
-                        className="bg-blue-600 px-2 rounded-r"
+                        className="bg-blue-600 px-2 rounded-r flex items-center justify-center"
                         onClick={handleSaveNewItem}
                       >
-                        ✓
+                        <FaCheck size={12} />
                       </button>
                     </div>
                   )}
@@ -231,7 +244,9 @@ const JackEditor = () => {
               className={`flex items-center hover:bg-gray-700 cursor-pointer ${activeFileId === item.id ? 'bg-gray-700' : ''}`}
               onClick={() => handleFileSelect(item.id)}
             >
-              <span className="mr-2">📄</span>
+              <span className="mr-2 text-gray-400">
+                <FaFile size={12} />
+              </span>
               <span>{item.name}</span>
             </div>
           )}
@@ -251,20 +266,22 @@ const JackEditor = () => {
         <div className="flex-1 overflow-y-auto p-2">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs uppercase text-gray-500">Vulcan-16</span>
-            <div>
+            <div className="flex space-x-2">
               <button 
-                className="text-gray-400 hover:text-white mr-2"
+                className="text-gray-400 hover:text-white flex items-center"
                 onClick={() => handleCreateItem('file')}
                 title="New File"
               >
-                📄+
+                <FaFile size={12} className="mr-1" />
+                <FaPlus size={10} />
               </button>
               <button 
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white flex items-center"
                 onClick={() => handleCreateItem('folder')}
                 title="New Folder"
               >
-                📁+
+                <FaFolder size={12} className="mr-1" />
+                <FaPlus size={10} />
               </button>
             </div>
           </div>
@@ -282,10 +299,10 @@ const JackEditor = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSaveNewItem()}
               />
               <button 
-                className="bg-blue-600 px-2 rounded-r"
+                className="bg-blue-600 px-2 rounded-r flex items-center justify-center"
                 onClick={handleSaveNewItem}
               >
-                ✓
+                <FaCheck size={12} />
               </button>
             </div>
           )}
@@ -307,13 +324,15 @@ const JackEditor = () => {
                 }`}
                 onClick={() => setActiveFileId(file.id)}
               >
-                <span className="mr-2">📄</span>
+                <span className="mr-2 text-gray-400">
+                  <FaFile size={12} />
+                </span>
                 <span className="max-w-xs truncate">{file.name}</span>
                 <button 
-                  className="ml-2 text-gray-500 hover:text-white"
+                  className="ml-2 text-gray-500 hover:text-white flex items-center"
                   onClick={(e) => handleCloseFile(file.id, e)}
                 >
-                  ×
+                  <FaTimes size={12} />
                 </button>
               </div>
             ))}
@@ -323,7 +342,7 @@ const JackEditor = () => {
             <button
               onClick={handleCompile}
               disabled={isLoading || !activeFile}
-              className={`p-1 rounded ${
+              className={`p-2 rounded flex items-center justify-center ${
                 isLoading 
                   ? 'text-gray-500' 
                   : activeFile 
@@ -333,15 +352,9 @@ const JackEditor = () => {
               title="Compile current file"
             >
               {isLoading ? (
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <FaSpinner className="animate-spin" size={16} />
               ) : (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <FaPlay size={16} />
               )}
             </button>
           </div>
@@ -360,9 +373,7 @@ const JackEditor = () => {
           ) : (
             <div className="flex items-center justify-center w-full h-full text-gray-500">
               <div className="text-center">
-                <svg className="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
+                <AiOutlineFile className="w-16 h-16 mx-auto mb-4 text-gray-600" />
                 <p>Open a file from the explorer to start editing</p>
               </div>
             </div>
