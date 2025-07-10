@@ -36,6 +36,32 @@ const JackEditor = () => {
   const [newItemParentId, setNewItemParentId] = useState(null);
   const [targetLanguage, setTargetLanguage] = useState('.hack');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [outputWidth, setOutputWidth] = useState(320); 
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResizing = () => setIsResizing(true);
+  const stopResizing = () => setIsResizing(false);
+  const resize = (e) => {
+    if (isResizing) {
+      const newWidth = window.innerWidth - e.clientX;
+      // Constrain width between 100px and window width - 100px
+      if (newWidth > 100 && newWidth < window.innerWidth - 100) {
+        setOutputWidth(newWidth);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('mouseup', stopResizing);
+    window.addEventListener('mousemove', resize);
+    return () => {
+      window.removeEventListener('mouseup', stopResizing);
+      window.removeEventListener('mousemove', resize);
+    };
+  }, [isResizing]);
+
+
+
 
   const findFile = (id, items = fileSystem) => {
     for (const item of items) {
@@ -512,34 +538,56 @@ const JackEditor = () => {
             </div>
           </div>
         </div>
-        {/* Editor Area */}
-        <div className="flex-1 flex">
-          {activeFile ? (
-            <textarea
-              value={activeFile.content}
-              onChange={(e) => handleFileContentChange(e.target.value)}
-              className="w-full h-full bg-gray-900 text-gray-200 p-4 font-mono text-sm resize-none outline-none"
-              spellCheck="false"
-              placeholder={`// Start coding in ${activeFile.name.split('.').pop().toUpperCase()}...`}
-            />
-          ) : (
-            <div className="flex items-center justify-center w-full h-full text-gray-500">
-              <div className="text-center">
-                <AiOutlineFile className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-                <p>Open a file from the explorer to start editing</p>
+        {/* Editor and Output Container */}
+        <div className="flex-1 flex" style={{ position: 'relative' }}>
+          {/* Editor Area */}
+          <div style={{ flex: 1, minWidth: 100 }}>
+            {activeFile ? (
+              <textarea
+                value={activeFile.content}
+                onChange={(e) => handleFileContentChange(e.target.value)}
+                className="w-full h-full bg-gray-900 text-gray-200 p-4 font-mono text-sm resize-none outline-none"
+                spellCheck="false"
+                placeholder={`// Start coding in ${activeFile.name.split('.').pop().toUpperCase()}...`}
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-gray-500">
+                <div className="text-center">
+                  <AiOutlineFile className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+                  <p>Open a file from the explorer to start editing</p>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Output Panel */}
-        <div className="h-48 bg-gray-900 border-t border-gray-700 flex flex-col">
-          <div className="bg-gray-800 px-4 py-2 text-sm text-gray-400">
-            OUTPUT
+            )}
           </div>
-          <pre className="flex-1 p-4 overflow-auto bg-gray-900 text-green-400 font-mono text-sm">
-            {output || '// Compilation output will appear here'}
-          </pre>
+
+          {/* Resizable Divider */}
+          <div
+            onMouseDown={startResizing}
+            className="bg-gray-700 hover:bg-gray-600 cursor-col-resize"
+            style={{ 
+              width: 4, 
+              cursor: 'col-resize', 
+              userSelect: 'none',
+              transition: 'background-color 0.2s'
+            }}
+          />
+
+          {/* Output Panel */}
+          <div 
+            style={{ 
+              width: outputWidth, 
+              minWidth: 100, 
+              backgroundColor: '#1a202c' 
+            }} 
+            className="flex flex-col border-l border-gray-700"
+          >
+            <div className="bg-gray-800 px-4 py-2 text-sm text-gray-400 border-b border-gray-700">
+              OUTPUT
+            </div>
+            <pre className="flex-1 p-4 overflow-auto bg-gray-900 text-green-400 font-mono text-sm">
+              {output || '//Compilation output will appear here'}
+            </pre>
+          </div>
         </div>
       </div>
     </div>
