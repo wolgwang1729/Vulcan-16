@@ -14,15 +14,14 @@ import {
 import { AiOutlineFile } from 'react-icons/ai';
 
 const JackEditor = () => {
-  // File system state
   const [fileSystem, setFileSystem] = useState([
     {
       id: 'folder-1',
-      name: 'Jack Sample Code1',
+      name: 'GuessANumber',
       type: 'folder',
       children: [
-        { id: 'file-1', name: 'main.jack', type: 'file', content: '// Jack code here' },
-        { id: 'file-2', name: 'math.vm', type: 'file', content: '// VM code here' },
+        { id: 'file-1', name: 'Main.jack', type: 'file', content: '// Jack code here' },
+        { id: 'file-2', name: 'Random.jack', type: 'file', content: '// Jack code here' },
       ],
     },
   ]);
@@ -47,6 +46,34 @@ const JackEditor = () => {
     return null;
   };
 
+  const findParentFolder = (fileId, items = fileSystem) => {
+    for (const item of items) {
+      if (item.type === 'folder' && item.children) {
+        if (item.children.some(child => child.id === fileId)) {
+          return item;
+        }
+      }
+    }
+    return null; 
+  };
+
+  const getAllFilesInFolder = (folder) => {
+  let files = [];
+  
+  if (folder.children) {
+    folder.children.forEach(child => {
+        if (child.type === 'file') {
+          files.push(child);
+        } else if (child.type === 'folder') {
+          files = files.concat(getAllFilesInFolder(child));
+        }
+      });
+    }
+  
+    return files;
+  };
+
+
   const activeFile = findFile(activeFileId);
 
   const handleFileSelect = (fileId) => {
@@ -55,13 +82,11 @@ const JackEditor = () => {
 
     setActiveFileId(fileId);
     
-    // Add to open files if not already open
     if (!openFiles.some(f => f.id === fileId)) {
       setOpenFiles([...openFiles, file]);
     }
   };
 
-  // Handle file content change
   const handleFileContentChange = (content) => {
     if (!activeFileId) return;
 
@@ -78,13 +103,11 @@ const JackEditor = () => {
 
     setFileSystem(updateContent(fileSystem));
     
-    // Update open files
     setOpenFiles(openFiles.map(file => 
       file.id === activeFileId ? { ...file, content } : file
     ));
   };
 
-  // Close a file
   const handleCloseFile = (fileId, e) => {
     e.stopPropagation();
     const newOpenFiles = openFiles.filter(file => file.id !== fileId);
@@ -95,14 +118,12 @@ const JackEditor = () => {
     }
   };
 
-  // Create new item
   const handleCreateItem = (type, parentId = null) => {
     setCreatingItem(type);
     setNewItemParentId(parentId);
     setNewItemName('');
   };
 
-  // Save new item
   const handleSaveNewItem = () => {
     if (!newItemName.trim()) {
       setCreatingItem(null);
@@ -162,14 +183,37 @@ const JackEditor = () => {
           return;
       }
       
-      const blob = new Blob([activeFile.content], { type: 'text/plain' });
-      const file = new File([blob], activeFile.name, { type: 'text/plain' });
+      // Check if the active file is inside a folder
+      const parentFolder = findParentFolder(activeFileId);
       
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('language', language);
+      
+      if (parentFolder && (language === 'jack' || language === 'vm')) {
+        // File is inside a folder - send entire folder
+        const folderFiles = getAllFilesInFolder(parentFolder);
+        
+        formData.append('folder_name', parentFolder.name);
+        formData.append('is_folder', 'true');
+        
+        // Add all files in the folder
+        folderFiles.forEach((file, index) => {
+          const blob = new Blob([file.content], { type: 'text/plain' });
+          const fileObj = new File([blob], file.name, { type: 'text/plain' });
+          formData.append(`files`, fileObj);
+        });
+        
+        setOutput(`Compiling folder: ${parentFolder.name}...`);
+      } else {
+        // Single file compilation
+        const blob = new Blob([activeFile.content], { type: 'text/plain' });
+        const file = new File([blob], activeFile.name, { type: 'text/plain' });
+        
+        formData.append('file', file);
+        formData.append('is_folder', 'false');
+      }
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/asmtohack`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/compile`, {
         method: 'POST',
         body: formData,
       });
@@ -177,7 +221,7 @@ const JackEditor = () => {
       const result = await response.json();
       
       if (result.success) {
-        setOutput(result.hack_code || 'Compilation successful');
+        setOutput(result.hack_code || result.asm_code || 'Compilation successful');
       } else {
         setOutput(`Error: ${result.message || result.error}`);
       }
