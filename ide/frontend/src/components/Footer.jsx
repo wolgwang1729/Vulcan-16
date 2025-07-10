@@ -1,5 +1,6 @@
 import React from 'react';
 import VLogo from '../assets/PixelatedV.png';
+import { NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -51,24 +52,20 @@ const Footer = () => {
             <h4 className="text-sm font-semibold text-white mb-3">Tools</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
-                  Code Editor
-                </a>
+                <NavLink
+                  to="/"
+                  className="text-gray-400 hover:text-white text-sm transition-colors duration-200 "
+                >
+                  Compiler
+                </NavLink>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
-                  Assembler
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
-                  VM Translator
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
-                  Jack Compiler
-                </a>
+                <NavLink
+                  to="/hardware-simulator"
+                  className="text-gray-400 hover:text-white text-sm transition-colors duration-200 "
+                >
+                  Simulator
+                </NavLink>
               </li>
             </ul>
           </div>

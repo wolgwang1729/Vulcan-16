@@ -1,5 +1,6 @@
 import React from 'react';
 import VLogo from '../assets/PixelatedV.png';
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -23,10 +24,19 @@ const Header = () => {
           >
             GitHub
           </a>
-          {/* <button className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
+          <NavLink
+            to="/"
+            className="text-gray-300 hover:text-white transition-colors duration-200 font-medium"
+          >
             Compiler
-          </button>
-          <button className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
+          </NavLink>
+          <NavLink
+            to="/hardware-simulator"
+            className="text-gray-300 hover:text-white transition-colors duration-200 font-medium"
+          >
+            Hardware Simulator
+          </NavLink>
+          {/* <button className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
             Monitor
           </button>
           <button className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
