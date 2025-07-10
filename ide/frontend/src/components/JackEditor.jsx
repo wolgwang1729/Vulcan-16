@@ -302,7 +302,9 @@ const JackEditor = () => {
             </div>
           ) : (
             <div 
-              className={`flex pl-2 py-0.5 items-center hover:bg-gray-700 cursor-pointer ${activeFileId === item.id ? 'bg-gray-700' : ''}`}
+              className={`flex pl-2 py-0.5 items-center cursor-pointer ${
+                activeFileId === item.id ? 'bg-blue-800 border border-blue-500' : 'hover:bg-gray-700 bg-gray-800'
+              }`}
               onClick={() => handleFileSelect(item.id)}
             >
               <span className="mr-2 text-gray-400">
