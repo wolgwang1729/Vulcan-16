@@ -237,7 +237,7 @@ const JackEditor = () => {
                         value={newItemName}
                         onChange={(e) => setNewItemName(e.target.value)}
                         placeholder="New file name"
-                        className="flex-1 bg-gray-700 text-white px-2 py-1 text-sm rounded-l"
+                        className="flex-1 bg-gray-700 text-white px-2 py-1 text-sm rounded-l outline-none"
                         autoFocus
                         onKeyDown={(e) => e.key === 'Enter' && handleSaveNewItem()}
                       />
@@ -307,7 +307,7 @@ const JackEditor = () => {
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
                 placeholder={`New ${creatingItem} name`}
-                className="flex-1 bg-gray-700 text-white px-2 py-1 text-sm rounded-l"
+                className="flex-1 bg-gray-700 text-white px-2 py-1 text-sm rounded-l outline-none"
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleSaveNewItem()}
               />
