@@ -7,7 +7,9 @@ import {
   FaTimes, 
   FaCheck,
   FaPlay,
-  FaSpinner
+  FaSpinner,
+  FaChevronRight,
+  FaChevronDown
 } from 'react-icons/fa';
 import { AiOutlineFile } from 'react-icons/ai';
 
@@ -197,9 +199,20 @@ const JackEditor = () => {
                 className="flex items-center py-1 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setCurrentFolder(currentFolder === item.id ? null : item.id)}
               >
+                {/* Arrow Icon */}
+                <span className="mr-1 text-gray-400">
+                  {currentFolder === item.id ? (
+                    <FaChevronDown size={12} />
+                  ) : (
+                    <FaChevronRight size={12} />
+                  )}
+                </span>
+                
+                {/* Folder Icon */}
                 <span className="mr-2 text-blue-400">
                   {currentFolder === item.id ? <FaFolderOpen size={14} /> : <FaFolder size={14} />}
                 </span>
+                
                 <span>{item.name}</span>
               </div>
               {currentFolder === item.id && (
