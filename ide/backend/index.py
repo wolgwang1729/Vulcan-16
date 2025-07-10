@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from Compiler import ASMParser, ASMFile
+from Compiler import *
 from werkzeug.utils import secure_filename
 import tempfile
 import shutil
@@ -48,6 +48,16 @@ def asm_to_hack():
                 'message': 'Assembly file converted successfully',
                 'filename': filename
             })
+        elif language == 'vm' or filename.endswith('.vm'):
+            vm_processor = VMTranslatorFile(filepath)
+            assembly_instructions = "\n".join(vm_processor.assemblyInstructions)
+            return jsonify({
+                'success': True,
+                'hack_code': assembly_instructions,
+                'message': 'VM file converted successfully',
+                'filename': filename
+            })
+
         else:
             return jsonify({'error': 'Unsupported file type'}), 400
             
