@@ -21,6 +21,7 @@ const JackEditor = () => {
   const [newItemName, setNewItemName] = useState('');
   const [creatingItem, setCreatingItem] = useState(null); 
   const [currentFolder, setCurrentFolder] = useState(null);
+  const [newItemParentId, setNewItemParentId] = useState(null);
 
   const findFile = (id, items = fileSystem) => {
     for (const item of items) {
@@ -84,7 +85,7 @@ const JackEditor = () => {
   // Create new item
   const handleCreateItem = (type, parentId = null) => {
     setCreatingItem(type);
-    setCurrentFolder(parentId);
+    setNewItemParentId(parentId);
     setNewItemName('');
   };
 
@@ -92,6 +93,7 @@ const JackEditor = () => {
   const handleSaveNewItem = () => {
     if (!newItemName.trim()) {
       setCreatingItem(null);
+      setNewItemParentId(null);
       return;
     }
 
@@ -105,10 +107,10 @@ const JackEditor = () => {
     };
 
     const addItem = (items) => {
-      if (!currentFolder) return [...items, newItem];
+      if (newItemParentId === null) return [...items, newItem];
       
       return items.map(item => {
-        if (item.id === currentFolder) {
+        if (item.id === newItemParentId) {
           return { ...item, children: [...(item.children || []), newItem] };
         }
         if (item.children) {
@@ -120,7 +122,7 @@ const JackEditor = () => {
 
     setFileSystem(addItem(fileSystem));
     setCreatingItem(null);
-    setCurrentFolder(null);
+    setNewItemParentId(null);
     
     if (creatingItem === 'file') {
       handleFileSelect(newItem.id);
@@ -186,25 +188,41 @@ const JackEditor = () => {
               >
                 <span className="mr-2">📁</span>
                 <span>{item.name}</span>
-                <button 
-                  className="ml-auto mr-2 text-xs bg-gray-600 rounded px-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCreateItem('file', item.id);
-                  }}
-                >
-                  +
-                </button>
               </div>
               {currentFolder === item.id && (
                 <div className="pl-4">
                   {renderFileTree(item.children || [], depth + 1)}
-                  <button
-                    className="text-xs text-gray-400 hover:text-white mt-1 flex items-center"
-                    onClick={() => handleCreateItem('folder', item.id)}
-                  >
-                    <span className="mr-1">+</span> New Folder
-                  </button>
+                  
+                  {/* New File button inside folder */}
+                  {!creatingItem && (
+                    <button
+                      className="text-xs text-gray-400 hover:text-white mt-1 flex items-center"
+                      onClick={() => handleCreateItem('file', item.id)}
+                    >
+                      <span className="mr-1">+</span> New File
+                    </button>
+                  )}
+                  
+                  {/* File creation form inside folder */}
+                  {creatingItem && newItemParentId === item.id && (
+                    <div className="mb-2 flex mt-2">
+                      <input
+                        type="text"
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        placeholder="New file name"
+                        className="flex-1 bg-gray-700 text-white px-2 py-1 text-sm rounded-l"
+                        autoFocus
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveNewItem()}
+                      />
+                      <button 
+                        className="bg-blue-600 px-2 rounded-r"
+                        onClick={handleSaveNewItem}
+                      >
+                        ✓
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -251,7 +269,8 @@ const JackEditor = () => {
             </div>
           </div>
           
-          {creatingItem && !currentFolder && (
+          {/* Root level creation form */}
+          {creatingItem && newItemParentId === null && (
             <div className="mb-2 flex">
               <input
                 type="text"
