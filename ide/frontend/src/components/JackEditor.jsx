@@ -196,7 +196,7 @@ const JackEditor = () => {
           {item.type === 'folder' ? (
             <div>
               <div 
-                className="flex items-center py-1 hover:bg-gray-700 cursor-pointer"
+                className="flex items-center pl-2 py-1 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setCurrentFolder(currentFolder === item.id ? null : item.id)}
               >
                 {/* Arrow Icon */}
@@ -221,12 +221,16 @@ const JackEditor = () => {
                   
                   {/* New File button inside folder */}
                   {!creatingItem && (
-                    <button
-                      className="text-xs text-gray-400 hover:text-white mt-1 flex items-center"
+                    <div 
+                      className='flex pl-2 py-0.5 items-center hover:bg-gray-700 cursor-pointer'
                       onClick={() => handleCreateItem('file', item.id)}
                     >
-                      <FaPlus className="mr-1" size={10} /> New File
-                    </button>
+                      <div
+                        className="text-xs text-gray-400 mt-1 flex items-center"
+                      >
+                        <FaPlus className="mr-1" size={10} /> New File
+                      </div>
+                    </div>
                   )}
                   
                   {/* File creation form inside folder */}
@@ -254,7 +258,7 @@ const JackEditor = () => {
             </div>
           ) : (
             <div 
-              className={`flex items-center hover:bg-gray-700 cursor-pointer ${activeFileId === item.id ? 'bg-gray-700' : ''}`}
+              className={`flex pl-2 py-0.5 items-center hover:bg-gray-700 cursor-pointer ${activeFileId === item.id ? 'bg-gray-700' : ''}`}
               onClick={() => handleFileSelect(item.id)}
             >
               <span className="mr-2 text-gray-400">
@@ -276,8 +280,8 @@ const JackEditor = () => {
           <h2 className="font-semibold">EXPLORER</h2>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-2">
-          <div className="flex justify-between items-center mb-2">
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex justify-between items-center mb-2 p-1">
             <span className="text-xs uppercase text-gray-500">Vulcan-16</span>
             <div className="flex space-x-2">
               <button 
