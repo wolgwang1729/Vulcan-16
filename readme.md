@@ -59,6 +59,27 @@ Vulcan-16/
     └── Games/         # GuessANumber
 ```
 
+# Web-Based IDE
+I have created a web-based IDE [Vulcan-16 IDE](https://vulcan-16.vercel.app/) which has two main features: Compiler and Hardware Simulator.
+
+## Features
+### Compiler
+- Translates `.jack` files to `.vm`, `.asm`, and `.hack` formats.
+- Converts `.vm` files to `.asm` and `.hack` formats.
+- Converts `.asm` files to `.hack` format.
+
+### Hardware Simulator
+- Includes a screen and keyboard status.
+- Runs programs after loading them into the ROM.
+- Allows users to change RAM values.
+- Displays various registers such as D, A, and PC in a proper format and points.
+
+## Images
+
+![Compiler](https://i.sstatic.net/AJTluoU8.png)
+
+![Hardware Simulator](https://i.sstatic.net/LeLh8Ddr.png)
+
 # Usage Instructions
 ## How to Run the Hardware Chips(.hdl)
 1. Open the HDL files in the hardware simulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE Hardware Simulator](https://nand2tetris.github.io/web-ide/chip)
@@ -70,18 +91,18 @@ Vulcan-16/
 3. Run the program and observe the results.
 
 ## How to Load and Execute the VM Programs(.vm)
-1. Load the VM program into the VM emulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE VM Emulator](https://nand2tetris.github.io/web-ide/vm)
+1. Load the VM program into the VM emulator either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE VM Emulator](https://nand2tetris.github.io/web-ide/vm) or [Vulcan-16 IDE](https://vulcan-16.vercel.app/).
 2. Change the execution speed to Fast.
 3. Run the program and observe the results.
 
 ## How to Load and Execute the Jack Programs(.jack)
-1. Load the folder in which Jack programs exist into the Jack compiler either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE Jack Compiler](https://nand2tetris.github.io/web-ide/jack)
+1. Load the folder in which Jack programs exist into the Jack compiler either in [legacy software package](https://drive.google.com/file/d/1IkIR8Pwq3PY49QgXpUJOkUUVht-TKIET/view) or [online IDE Jack Compiler](https://nand2tetris.github.io/web-ide/jack) or [Vulcan-16 IDE](https://vulcan-16.vercel.app/).
 2. Click on `Compile` to compile the Jack programs and then click on `Run` to load the generated VM code into the VM emulator.
 3. Change the execution speed to Fast.
 4. Run the program and observe the results.
 
 # Future Roadmap
-- Develop a web-based hardware simulator and IDE to test various architectures, enabling more flexible experimentation beyond the current setup.
+- ~~Develop a web-based hardware simulator and IDE to test various architectures, enabling more flexible experimentation beyond the current setup.~~ *(Completed: Check out [Vulcan-16 IDE](https://vulcan-16.vercel.app/) for the web-based hardware simulator and IDE.)*
 - Translate key hardware chips into popular HDL languages such as Verilog and VHDL to broaden compatibility and integration.
 - Port Vulcan-16 onto an FPGA platform to validate designs on actual hardware and enhance performance.
 
