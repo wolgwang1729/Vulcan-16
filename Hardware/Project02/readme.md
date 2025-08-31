@@ -14,7 +14,7 @@ $$
 \begin{array}{|c|c|c|c|c|c|c|}
 \hline zx & nx & zy & ny & f & no & out = \\
 \hline \text{if } zx \text{ then } &\text{if } nx \text{ then } x&\text{if } zy \text{ then } &\text{if } ny \text{ then }&\text{if } f \text{ then } out=x+y &\text{if } no \text{ then }&f(x,y)=\\
-\ x=0 & x=!x & y=0 & y=!y &\text{ else } out=!out&out=!out \\
+\ x=0 & x=!x & y=0 & y=!y &\text{ else } out=x\wedge y&out=!out \\
 \hline 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
 \hline 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
 \hline 1 & 1 & 1 & 0 & 1 & 0 & -1 \\
