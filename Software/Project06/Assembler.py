@@ -126,7 +126,6 @@ class ASMFile:
         self.symbolTable = self.getSymbolTable()
         self.relevantLines = self.getRelevantLines()
         # print(f"relevantLines: {self.relevantLines}")
-        self.freeBinaryString=self.getFreeBinaryString()
         self.hackInstructions = self.getHackInstructions()
 
     def readFile(self):
@@ -164,11 +163,6 @@ class ASMFile:
                     relevantLinesLabels.append(line.strip())
 
         return relevantLinesLabels
-    
-    def getFreeBinaryString(self):
-        freeBinaryString = "1"*16
-        freeBinaryString+=("0"*(24577-16))
-        return freeBinaryString
 
     def getSymbolTable(self):
         symbolTable = {
@@ -223,5 +217,5 @@ class ASMFile:
 
             print(f'{self.fileName.split(".")[0]}.hack file created successfully')
 
-asmFile = ASMFile("Project6\ASM Files\Max.asm")
+asmFile = ASMFile("/workspaces/Vulcan-16/Software/Project06/ASM Files/Max.asm")
 asmFile.writeHackFile()
