@@ -48,7 +48,7 @@ def compile():
             os.makedirs(folder_path, exist_ok=True)
 
             # Copy built-in OS .jack files into the temp folder
-            source_dir = 'OS'
+            source_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'OS')
             for os_file in os.listdir(source_dir):
                 print(os_file)
                 if os_file.endswith('.jack'):
