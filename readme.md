@@ -103,6 +103,8 @@ I have created a web-based IDE [Vulcan-16 IDE](https://vulcan-16.vercel.app/) wh
 
 # Future Roadmap
 - ~~Develop a web-based hardware simulator and IDE to test various architectures, enabling more flexible experimentation beyond the current setup.~~ *(Completed: Check out [Vulcan-16 IDE](https://vulcan-16.vercel.app/) for the web-based hardware simulator and IDE.)*
+- Fix the OS problems.
+- Improve the compiler to use the techniques learned from "Compilers: Principles, Techniques, and Tools" by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman to generate more efficient code and maybe migrate to C++ for better performance.
 - Translate key hardware chips into popular HDL languages such as Verilog and VHDL to broaden compatibility and integration.
 - Port Vulcan-16 onto an FPGA platform to validate designs on actual hardware and enhance performance.
 
@@ -112,6 +114,7 @@ I have created a web-based IDE [Vulcan-16 IDE](https://vulcan-16.vercel.app/) wh
 - "The Elements of Computing Systems: Building a Modern Computer from First Principles" by Noam Nisan and Shimon Schocken.
 - "Digital Design" by M. Morris Mano.
 - "Computer System Architecture" by M. Morris Mano.
+- "Compilers: Principles, Techniques, and Tools" by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman.
 - Nand2tetris course materials.
 
 # License
