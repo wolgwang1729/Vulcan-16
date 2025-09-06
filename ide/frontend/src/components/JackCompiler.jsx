@@ -174,7 +174,54 @@ D;JGT
 @END
 0;JMP
 `
+const multAsmCode =
+`Code taken from https://github.com/wolgwang1729/Vulcan-16/blob/main/Hardware/Project04/Mult.asm
 
+// Multiplies R0 and R1 and stores the result in R2.
+// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
+// The algorithm is based on repetitive addition.
+
+@R0 
+D=M
+@a 
+M=D
+
+@R1
+D=M
+@b
+M=D
+
+@result
+M=0
+
+(LOOP)
+@b
+D=M
+@AFTERLOOP
+D;JEQ
+
+@a 
+D=M
+
+@result
+M=D+M
+
+@b
+M=M-1
+
+@LOOP
+0;JMP
+
+(AFTERLOOP)
+@result
+D=M
+@R2
+M=D
+
+(END)
+@END
+0;JMP
+`
 
 const JackCompiler = () => {
   const [fileSystem, setFileSystem] = useState([
@@ -188,6 +235,7 @@ const JackCompiler = () => {
       ],
     },
     { id: 'file-3', name: 'Rectangle.asm', type: 'file', content: rectAsmCode },
+    { id: 'file-4', name: 'Multiplication.asm', type: 'file', content: multAsmCode },
   ]);
 
   const [openFiles, setOpenFiles] = useState([]);
