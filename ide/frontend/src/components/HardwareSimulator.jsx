@@ -406,119 +406,197 @@ const HardwareSimulator = () => {
     };
   }, [isResizing]);
 
-  // CPU simulation logic
-  const executeInstruction = (instruction) => {
-    if ((instruction & 0b1000000000000000) === 0) {
-      // A-instruction: @value
-      const value = instruction & 0b0111111111111111;
-      setARegister(value);
-    } else {
-      // C-instruction
-      const comp = (instruction >> 6) & 0b1111111;
-      const dest = (instruction >> 3) & 0b111;
-      const jump = instruction & 0b111;
+// CPU simulation logic
+const executeInstruction = (instruction) => {
+  if ((instruction & 0b1000000000000000) === 0) {
+    // A-instruction: @value
+    const value = instruction & 0b0111111111111111;
+    setARegister(value);
+  } else {
+    // C-instruction
+    const comp = (instruction >> 6) & 0b1111111;
+    const dest = (instruction >> 3) & 0b111;
+    const jump = instruction & 0b111;
 
-      let aluResult = 0;
-      const aValue = memory[aRegister] || 0;
-      
-      // ALU computation based on comp bits
-      switch (comp) {
-        case 0b0101010: aluResult = 0; break; // 0
-        case 0b0111111: aluResult = 1; break; // 1
-        case 0b0111010: aluResult = -1; break; // -1
-        case 0b0001100: aluResult = dRegister; break; // D
-        case 0b0110000: aluResult = aRegister; break; // A
-        case 0b1110000: aluResult = aValue; break; // M
-        case 0b0001101: aluResult = ~dRegister & 0b1111111111111111; break; // !D
-        case 0b0110001: aluResult = ~aRegister & 0b1111111111111111; break; // !A
-        case 0b1110001: aluResult = ~aValue & 0b1111111111111111; break; // !M
-        case 0b0001111: aluResult = (-dRegister) & 0b1111111111111111; break; // -D
-        case 0b0110011: aluResult = (-aRegister) & 0b1111111111111111; break; // -A
-        case 0b1110011: aluResult = (-aValue) & 0b1111111111111111; break; // -M
-        case 0b0011111: aluResult = (dRegister + 1) & 0b1111111111111111; break; // D+1
-        case 0b0110111: aluResult = (aRegister + 1) & 0b1111111111111111; break; // A+1
-        case 0b1110111: aluResult = (aValue + 1) & 0b1111111111111111; break; // M+1
-        case 0b0001110: aluResult = (dRegister - 1) & 0b1111111111111111; break; // D-1
-        case 0b0110010: aluResult = (aRegister - 1) & 0b1111111111111111; break; // A-1
-        case 0b1110010: aluResult = (aValue - 1) & 0b1111111111111111; break; // M-1
-        case 0b0000010: aluResult = (dRegister + aRegister) & 0b1111111111111111; break; // D+A
-        case 0b1000010: aluResult = (dRegister + aValue) & 0b1111111111111111; break; // D+M
-        case 0b0010011: aluResult = (dRegister - aRegister) & 0b1111111111111111; break; // D-A
-        case 0b1010011: aluResult = (dRegister - aValue) & 0b1111111111111111; break; // D-M
-        case 0b0000111: aluResult = (aRegister - dRegister) & 0b1111111111111111; break; // A-D
-        case 0b1000111: aluResult = (aValue - dRegister) & 0b1111111111111111; break; // M-D
-        case 0b0000000: aluResult = dRegister & aRegister; break; // D&A
-        case 0b1000000: aluResult = dRegister & aValue; break; // D&M
-        case 0b0010101: aluResult = dRegister | aRegister; break; // D|A
-        case 0b1010101: aluResult = dRegister | aValue; break; // D|M
-        default: aluResult = 0;
-      }
+    let aluResult = 0;
+    const aValue = memory[aRegister] || 0;
+    const dValue = dRegister;
 
-      // Handle destinations
-      if (dest & 0b100) { // A register
-        setARegister(aluResult);
-      }
-      if (dest & 0b010) { // D register
-        setDRegister(aluResult);
-      }
-      if (dest & 0b001) { // Memory
-        setMemory(prev => {
-          const newMemory = [...prev];
-          if (aRegister < 24577) {
-            newMemory[aRegister] = aluResult;
-          }
-          return newMemory;
-        });
-      }
-
-      // Handle jumps
-      const isZero = aluResult === 0;
-      const isNeg = (aluResult & 0b1000000000000000) !== 0;
-      const isPos = !isZero && !isNeg;
-
-      let shouldJump = false;
-      switch (jump) {
-        case 0b001: shouldJump = isPos; break; // JGT
-        case 0b010: shouldJump = isZero; break; // JEQ
-        case 0b011: shouldJump = isPos || isZero; break; // JGE
-        case 0b100: shouldJump = isNeg; break; // JLT
-        case 0b101: shouldJump = !isZero; break; // JNE
-        case 0b110: shouldJump = isNeg || isZero; break; // JLE
-        case 0b111: shouldJump = true; break; // JMP
-      }
-
-      if (shouldJump) {
-        setPc(aRegister);
-        return;
-      }
+    // ALU computation based on comp bits
+    switch (comp) {
+      case 0b0101010:
+        aluResult = 0;
+        break; // 0
+      case 0b0111111:
+        aluResult = 1;
+        break; // 1
+      case 0b0111010:
+        aluResult = -1;
+        break; // -1
+      case 0b0001100:
+        aluResult = dValue;
+        break; // D
+      case 0b0110000:
+        aluResult = aRegister;
+        break; // A
+      case 0b1110000:
+        aluResult = aValue;
+        break; // M
+      case 0b0001101:
+        aluResult = ~dValue;
+        break; // !D
+      case 0b0110001:
+        aluResult = ~aRegister;
+        break; // !A
+      case 0b1110001:
+        aluResult = ~aValue;
+        break; // !M
+      case 0b0001111:
+        aluResult = -dValue;
+        break; // -D
+      case 0b0110011:
+        aluResult = -aRegister;
+        break; // -A
+      case 0b1110011:
+        aluResult = -aValue;
+        break; // -M
+      case 0b0011111:
+        aluResult = dValue + 1;
+        break; // D+1
+      case 0b0110111:
+        aluResult = aRegister + 1;
+        break; // A+1
+      case 0b1110111:
+        aluResult = aValue + 1;
+        break; // M+1
+      case 0b0001110:
+        aluResult = dValue - 1;
+        break; // D-1
+      case 0b0110010:
+        aluResult = aRegister - 1;
+        break; // A-1
+      case 0b1110010:
+        aluResult = aValue - 1;
+        break; // M-1
+      case 0b0000010:
+        aluResult = dValue + aRegister;
+        break; // D+A
+      case 0b1000010:
+        aluResult = dValue + aValue;
+        break; // D+M
+      case 0b0010011:
+        aluResult = dValue - aRegister;
+        break; // D-A
+      case 0b1010011:
+        aluResult = dValue - aValue;
+        break; // D-M
+      case 0b0000111:
+        aluResult = aRegister - dValue;
+        break; // A-D
+      case 0b1000111:
+        aluResult = aValue - dValue;
+        break; // M-D
+      case 0b0000000:
+        aluResult = dValue & aRegister;
+        break; // D&A
+      case 0b1000000:
+        aluResult = dValue & aValue;
+        break; // D&M
+      case 0b0010101:
+        aluResult = dValue | aRegister;
+        break; // D|A
+      case 0b1010101:
+        aluResult = dValue | aValue;
+        break; // D|M
+      default:
+        aluResult = 0;
     }
     
-    setPc(prev => (prev + 1) % 32768);
-  };
-
-  // Simulation loop
-  useEffect(() => {
-    if (!isRunning || isPaused) {
-      if (simulationRef.current) {
-        clearInterval(simulationRef.current);
-        simulationRef.current = null;
-      }
-      return;
+    // Normalize to 16-bit signed integer for comparison
+    const signedAluResult = (aluResult << 16) >> 16;
+    
+    // Handle destinations
+    if (dest & 0b100) {
+      // A register
+      setARegister(aluResult & 0b1111111111111111);
+    }
+    if (dest & 0b010) {
+      // D register
+      setDRegister(aluResult & 0b1111111111111111);
+    }
+    if (dest & 0b001) {
+      // Memory
+      setMemory((prev) => {
+        const newMemory = [...prev];
+        if (aRegister < 24577) {
+          newMemory[aRegister] = aluResult & 0b1111111111111111;
+        }
+        return newMemory;
+      });
     }
 
-    simulationRef.current = setInterval(() => {
-      if (pc < rom.length && rom[pc] !== undefined) {
-        executeInstruction(rom[pc]);
-        setCycles(prev => prev + 1);
-      }
-    }, 10); // 100 Hz simulation
+    // Handle jumps
+    const isZero = signedAluResult === 0;
+    const isNeg = signedAluResult < 0;
+    const isPos = signedAluResult > 0;
 
-    return () => {
-      if (simulationRef.current) {
-        clearInterval(simulationRef.current);
-      }
-    };
-  }, [isRunning, isPaused, pc, rom, aRegister, dRegister, memory]);
+    let shouldJump = false;
+    switch (jump) {
+      case 0b001:
+        shouldJump = isPos;
+        break; // JGT
+      case 0b010:
+        shouldJump = isZero;
+        break; // JEQ
+      case 0b011:
+        shouldJump = isPos || isZero;
+        break; // JGE
+      case 0b100:
+        shouldJump = isNeg;
+        break; // JLT
+      case 0b101:
+        shouldJump = !isZero;
+        break; // JNE
+      case 0b110:
+        shouldJump = isNeg || isZero;
+        break; // JLE
+      case 0b111:
+        shouldJump = true;
+        break; // JMP
+    }
+
+    if (shouldJump) {
+      setPc(aRegister);
+      return;
+    }
+  }
+
+  setPc((prev) => (prev + 1) % 32768);
+};
+
+// Simulation loop
+useEffect(() => {
+  if (!isRunning || isPaused) {
+    if (simulationRef.current) {
+      clearInterval(simulationRef.current);
+      simulationRef.current = null;
+    }
+    return;
+  }
+
+  simulationRef.current = setInterval(() => {
+    if (pc < rom.length && rom[pc] !== undefined) {
+      executeInstruction(rom[pc]);
+      setCycles((prev) => prev + 1);
+    }
+  }, 10); // 100 Hz simulation
+
+  return () => {
+    if (simulationRef.current) {
+      clearInterval(simulationRef.current);
+    }
+  };
+}, [isRunning, isPaused, pc, rom, aRegister, dRegister, memory]);
 
   const findFile = (id, items = fileSystem) => {
     for (const item of items) {
