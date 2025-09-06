@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa';
 import { AiOutlineFile } from 'react-icons/ai';
 
-const defaultHackCode = 
+const rectangleHack = 
 `0100000000000000
 1110110000010000
 0000000000010000
@@ -49,6 +49,16 @@ const defaultHackCode =
 0000000000010001
 1110001100000001
 0000000000100000
+1110101010000111`;
+
+const addHack =
+`0000000000000000
+1111110000010000
+0000000000000001
+1111000010010000
+0000000000000010
+1110001100001000
+0000000000000110
 1110101010000111`;
 
 // Screen Component
@@ -265,9 +275,15 @@ const HardwareSimulator = () => {
   const [fileSystem, setFileSystem] = useState([
     {
       id: 'file-rectangle',
-      name: 'rectangle.hack',
+      name: 'Rectangle.hack',
       type: 'file',
-      content: defaultHackCode
+      content: rectangleHack,
+    },
+    {
+      id: 'file-add',
+      name: 'Add.hack',
+      type: 'file',
+      content: addHack,
     },
   ]);
 
