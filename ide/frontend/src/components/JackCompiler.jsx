@@ -175,7 +175,7 @@ D;JGT
 0;JMP
 `
 const multAsmCode =
-`Code taken from https://github.com/wolgwang1729/Vulcan-16/blob/main/Hardware/Project04/Mult.asm
+`// Code taken from https://github.com/wolgwang1729/Vulcan-16/blob/main/Hardware/Project04/Mult.asm
 
 // Multiplies R0 and R1 and stores the result in R2.
 // (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
